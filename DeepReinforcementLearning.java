@@ -11,28 +11,28 @@ public class DeepReinforcementLearning {
     public static final int ROWS = 21;
     public static final int COLS = 10;
     public static final int NODES = ROWS * COLS;
-    
-    public static double[][][] w1;
-    public static double[] w2;
-    public static double[] bias;
+
+    public double[][][] w1_;
+    public double[] w2_;
+    public double[] bias_;
     //Bias is based on the move selected
 
     public DeepReinforcementLearning() {
-        double[][][] w1 = new double[ROWS][COLS][NODES];
-        double[] w2 = new double[NODES];
-        double[] bias = new double[2];
-        
+        this.w1_ = new double[ROWS][COLS][NODES];
+        this.w2_ = new double[NODES];
+        this.bias_ = new double[2];
+
         //Random Initialisation
         for (int i = 0; i < NODES; i++) {
             for (int j = 0; j < ROWS; j++) {
                 for (int k = 0; k < COLS; k++) {
-                    w1[j][k][i] = ThreadLocalRandom.current().nextDouble(-1, 1);
+                    w1_[j][k][i] = ThreadLocalRandom.current().nextDouble(-1, 1);
                 }
             }
-            w2[i] = ThreadLocalRandom.current().nextDouble(-1, 1);
+            w2_[i] = ThreadLocalRandom.current().nextDouble(-1, 1);
         }
-        bias[0] = ThreadLocalRandom.current().nextDouble(-1, 1);
-        bias[1] = ThreadLocalRandom.current().nextDouble(-1, 1);
+        bias_[0] = ThreadLocalRandom.current().nextDouble(-1, 1);
+        bias_[1] = ThreadLocalRandom.current().nextDouble(-1, 1);
     }
 
     public int[] pickMove(State s) {
@@ -40,7 +40,8 @@ public class DeepReinforcementLearning {
         double[] values = new double[counter];
         for (int i = 0; i < counter; i++) {
             double value = neural(s.getField(), s.legalMoves()[i]);
-            if (value >= 0) {
+            //System.out.println("value: " + value);
+            if (value >= 0.5) {
                 return s.legalMoves()[i];
             } else {
                 values[i] = value;
@@ -54,6 +55,7 @@ public class DeepReinforcementLearning {
                 move = i;
             }
         }
+        //System.err.println("Full Clear");
         return s.legalMoves()[move];
     }
 
@@ -66,10 +68,10 @@ public class DeepReinforcementLearning {
         for (int i = 0; i < NODES; i++) {
             for (int j = 0; j < ROWS; j++) {
                 for (int k = 0; k < COLS; k++) {
-                    layer[i] += field[j][k] * w1[j][k][i];
+                    layer[i] += field[j][k] * w1_[j][k][i];
                 }
             }
-            layer[i] += bias[0] * move[0] + bias[1] * move[1];
+            layer[i] += bias_[0] * move[0] + bias_[1] * move[1];
 
             //ReLU
             if (layer[i] < 0) {
@@ -81,20 +83,22 @@ public class DeepReinforcementLearning {
         double value = 0;
 
         for (int i = 0; i < NODES; i++) {
-            value += layer[i] * w2[i];
+            value += layer[i] * w2_[i];
         }
 
         //Sigmoid
         return sigmoid(value);
     }
+    
+    public void backwardPropagation(){
+        
+    }
+
+    public double error() {
+        return 0;
+    }
 
     public static double sigmoid(double x) {
         return 1 / (1 + Math.exp(-x));
     }
-    
-        
-    public double error(){
-        return 0;
-    }
-
 }

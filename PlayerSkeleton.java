@@ -28,11 +28,22 @@ public class PlayerSkeleton {
     }
 
     public static void main(String[] args) {
-        h = new Heuristics(size, weight);
-        m = new MakeMove();
-        System.out.println(iteration());
+        DeepReinforcementLearning d = new DeepReinforcementLearning();
+        for (int iter = 0; iter < 10; iter++) {
+            State s = new State();
+            while (!s.hasLost()) {
+                //System.out.println(s.nextPiece);
+                s.makeMove(d.pickMove(s));
+            }
+            System.out.println("Number of Rows Cleared: " + s.getRowsCleared());
+        }
     }
 
+//    public static void main(String[] args) {
+//        h = new Heuristics(size, weight);
+//        m = new MakeMove();
+//        System.out.println(iteration());
+//    }
     public static void StochasticLinear() {
         int iter = 10000;
         double step = 1;
