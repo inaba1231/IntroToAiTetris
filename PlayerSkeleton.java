@@ -28,11 +28,10 @@ public class PlayerSkeleton {
     }
 
     public static void main(String[] args) {
-        DeepReinforcementLearning d = new DeepReinforcementLearning();
+        DeepReinforcementLearning d = new DeepReinforcementLearning(true);
         for (int iter = 0; iter < 10; iter++) {
             State s = new State();
             while (!s.hasLost()) {
-                //System.out.println(s.nextPiece);
                 s.makeMove(d.pickMove(s));
             }
             System.out.println("Number of Rows Cleared: " + s.getRowsCleared());
