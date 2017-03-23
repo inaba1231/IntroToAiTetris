@@ -17,7 +17,7 @@ public class Weights {
 
     public double[][][] w1_;
     public double[] w2_;
-    public double[][] bias_;
+    public double[][][] bias_;
 
     public Weights() {
 

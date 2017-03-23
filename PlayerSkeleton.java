@@ -35,6 +35,7 @@ public class PlayerSkeleton {
                 s.makeMove(d.pickMove(s));
             }
             System.out.println("Number of Rows Cleared: " + s.getRowsCleared());
+            d.updateWeights();
         }
     }
 
@@ -118,5 +119,4 @@ public class PlayerSkeleton {
         }
         System.out.println("----");
     }
-
 }
