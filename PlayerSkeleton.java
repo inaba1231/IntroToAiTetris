@@ -147,6 +147,8 @@ public class PlayerSkeleton {
     }
 
     public static void main(String[] args) {
+        //BigBang.resetPopulation();
+        
         runAlgo(1);
     }
 
