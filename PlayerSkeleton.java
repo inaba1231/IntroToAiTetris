@@ -128,14 +128,26 @@ public class PlayerSkeleton {
         }
     }
 
-    public static void main(String[] args) {
+    private static void runAlgo(int cycles) {
+        if (cycles < 1) {
+            return;
+        }
+
         IO io = new IO();
         double[][] population = io.importPopulation();
-        int[] cumulativeFitness = getCumulativeFitness(population);
-        double[][] nextPopulation = select(population, cumulativeFitness);
-        crossOver(nextPopulation);
-        mutate(nextPopulation);
-        io.exportPopulation(nextPopulation);
+
+        for (int i = 0; i < cycles; i++) {
+            int[] cumulativeFitness = getCumulativeFitness(population);
+            population = select(population, cumulativeFitness);
+            crossOver(population);
+            mutate(population);
+        }
+
+        io.exportPopulation(population);
+    }
+
+    public static void main(String[] args) {
+        runAlgo(1);
     }
 
 }
