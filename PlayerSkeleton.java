@@ -91,7 +91,7 @@ public class PlayerSkeleton {
     private static double[][] select(double[][] population, int[] cumulativeFitness) {
         int totalFitness = cumulativeFitness[cumulativeFitness.length - 1];
         if (totalFitness == 0) {
-            return BigBang.generatePopulation();
+            return BigBang.resetPopulation();
         }
 
         double[][] nextPopulation = new double[POPULATION_SIZE][SET_LENGTH];

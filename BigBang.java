@@ -11,7 +11,7 @@ import static Tetris.Constants.*;
  */
 public class BigBang {
 
-    public static double[][] generatePopulation() {
+    public static double[][] resetPopulation() {
 
         Random nature = new Random();
         double[][] population = new double[POPULATION_SIZE][SET_LENGTH];
@@ -31,11 +31,11 @@ public class BigBang {
 
     }
 
-    /*
+    /* Initialize first generation of population
     public static void main(String args[]) {
 
         IO io = new IO();
-        io.exportPopulation(generatePopulation());
+        io.exportPopulation(resetPopulation());
 
     }
     */

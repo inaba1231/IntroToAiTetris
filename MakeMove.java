@@ -1,13 +1,12 @@
 package Tetris;
 
+import static Tetris.Constants.*;
+
 /**
  *
  * @author JunKiat
  */
 public class MakeMove {
-
-    public static final int COLS = 10;
-    public static final int ROWS = 21;
 
     public void makeMove(int[][] field, int orient, int slot, State s) {
         int nextPiece = s.getNextPiece();
