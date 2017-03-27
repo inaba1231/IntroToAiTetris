@@ -5,15 +5,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import static Tetris.Constant.*;
+
 /**
  *
  * @author JunKiat
  */
 public class IO {
-
-    public static final int POPULATION_SIZE = 1;
-    public static final int SET_LENGTH = 21;
-    public static final String filename = "src/Tetris/population.txt";
 
     public void exportPopulation(double[][] population) {
         try {
