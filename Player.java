@@ -151,7 +151,7 @@ public class Player {
             }
         }
     }
-
+/*
     public static void main(String[] args) {
         int iter = 10000;
         int step = 1;
@@ -176,6 +176,7 @@ public class Player {
         //System.out.println(sum / loop);
         return sum / loop;
     }
+    */
 
     public void p(int[][] a) {
         for (int[] x : a) {

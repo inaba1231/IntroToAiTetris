@@ -6,16 +6,15 @@ public class PlayerSkeleton {
 
     public static Heuristics h;
     public static MakeMove m;
+    public static IO io;
     public static final int COLS = 10;
     public static final int ROWS = 21;
     public static final int size = 21;
 
-    //Lucky guess
-    public static double[] weight = {-2, -4, -6, -8, -10, -10, -8, -6, -4, -2, 8, 6, 4, 2, 2, -2, -4, -6, -8, -50, -40};
-    //Zeroes
-    //static double[] weight = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    //Temporary trained
-    //static double[] weight = {-3.1000000000000005, -4.460000000000001, -5.850000000000002, -7.419999999999999, -9.379999999999999, -7.879999999999997, -7.47, -4.79, -7.989999999999998, -7.470000000000001, 6.200000000000002, 0.8799999999999997, 1.850000000000001, 2.2300000000000004, -0.10000000000000053, -0.9200000000000008, -2.3, -4.900000000000001, -10.23, -51.64000000000001, -38.67};
+    public PlayerSkeleton(double[] set) {
+        h = new Heuristics(set.length, set);
+        m = new MakeMove();
+    }
 
     public int[][] copy(int[][] a) {
         int[][] field = new int[ROWS][COLS];
@@ -26,7 +25,7 @@ public class PlayerSkeleton {
         }
         return field;
     }
-
+/*
     public static void main(String[] args) {
         DeepReinforcementLearning d = new DeepReinforcementLearning(true);
         for (int iter = 0; iter < 10; iter++) {
@@ -38,12 +37,36 @@ public class PlayerSkeleton {
             d.updateWeights();
         }
     }
+    */
+
+    public static void main(String[] args) {
+        IO io = new IO();
+        double[][] population = io.importPopulation();
+        for (int i = 0; i < population.length; i++) {
+            State s = new State();
+            new TFrame(s);
+            double[] set = population[i];
+            PlayerSkeleton p = new PlayerSkeleton(set);
+            while (!s.hasLost()) {
+                s.makeMove(p.pickMove(s, s.legalMoves()));
+                s.draw();
+                s.drawNext(0, 0);
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            System.out.println("#" + i + ": You have completed " + s.getRowsCleared() + " rows.");
+        }
+    }
 
 //    public static void main(String[] args) {
 //        h = new Heuristics(size, weight);
 //        m = new MakeMove();
 //        System.out.println(iteration());
 //    }
+    /*
     public static void StochasticLinear() {
         int iter = 10000;
         double step = 1;
@@ -92,6 +115,7 @@ public class PlayerSkeleton {
         //System.out.println(sum / loop);
         return sum / loop;
     }
+    */
 
     public int[] pickMove(State s, int[][] legalMoves) {
         double max = -Double.MAX_VALUE;

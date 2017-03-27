@@ -1,7 +1,6 @@
 package Tetris;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,43 +11,19 @@ import java.io.PrintWriter;
  */
 public class IO {
 
-    public static final int ROWS = 21;
-    public static final int COLS = 10;
-    public static final int NODES = ROWS * COLS;
-    public static final String filename = "weights.txt";
+    public static final int POPULATION_SIZE = 1;
+    public static final int SET_LENGTH = 21;
+    public static final String filename = "src/Tetris/population.txt";
 
-    public IO() {
-
-    }
-
-    public void exportWeights(Weights w) {
+    public void exportPopulation(double[][] population) {
         try {
             PrintWriter writer = new PrintWriter(filename, "UTF-8");
 
-            //Print w1
-            for (int i = 0; i < NODES; i++) {
-                for (int j = 0; j < ROWS; j++) {
-                    for (int k = 0; k < COLS; k++) {
-                        writer.print(w.w1_[j][k][i] + ",");
-                    }
-                    writer.println();
+            for (int i = 0; i < POPULATION_SIZE; i++) {
+                for (int j = 0; j < SET_LENGTH; j++) {
+                    writer.print(population[i][j] + ",");
                 }
-            }
-
-            //Print w2
-            for (int i = 0; i < NODES; i++) {
-                writer.print(w.w2_[i] + ",");
-            }
-            writer.println();
-
-            //Print bias
-            for (int i = 0; i < NODES; i++) {
-                for (int j = 0; j < 4; j++) {
-                    for (int k = 0; k < COLS; k++) {
-                        writer.print(w.bias_[j][k][i] + ",");
-                    }
-                    writer.println();
-                }
+                writer.println();
             }
 
             writer.flush();
@@ -58,42 +33,20 @@ public class IO {
         }
     }
 
-    public Weights importWeights() {
-        Weights w = new Weights();
-        w.w1_ = new double[ROWS][COLS][NODES];
-        w.w2_ = new double[NODES];
-        w.bias_ = new double[4][COLS][NODES];
+    public double[][] importPopulation() {
+        double[][] population = new double[POPULATION_SIZE][SET_LENGTH];
+
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             String[] line;
-            
-            //Read w1
-            for (int i = 0; i < NODES; i++) {
-                for (int j = 0; j < ROWS; j++) {
-                    line = br.readLine().split(",");
-                    for (int k = 0; k < COLS; k++) {
-                        w.w1_[j][k][i] = Double.parseDouble(line[k]);
-                    }
-                }
-            }
-            
-            //Read w2
-            line = br.readLine().split(",");
-            for (int i = 0; i < NODES; i++) {
-                w.w2_[i] = Double.parseDouble(line[i]);
-            }
-            
-            //Read bias
-            for (int i = 0; i < NODES; i++) {
-                for (int j = 0; j < 4; j++) {
-                    line = br.readLine().split(",");
-                    for (int k = 0; k < COLS; k++) {
-                        w.bias_[j][k][i] = Double.parseDouble(line[k]);
-                    }
+            for (int i = 0; i < POPULATION_SIZE; i++) {
+                line = br.readLine().split(",");
+                for (int j = 0; j < SET_LENGTH; j++) {
+                    population[i][j] = Double.parseDouble(line[j]);
                 }
             }
         } catch (Exception e) {
 
         }
-        return w;
+        return population;
     }
 }
