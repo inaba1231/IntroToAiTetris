@@ -80,7 +80,7 @@ public class PlayerSkeleton {
             return left;
         }
 
-        int mid = (right - left)/2;
+        int mid = (right - left)/2 + left;
         if (array[mid] > number) {
             return binarySearch(array, number, left, mid);
         } else {
