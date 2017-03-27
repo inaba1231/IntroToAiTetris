@@ -159,7 +159,7 @@ public class PlayerSkeleton {
     }
 
     public static void main(String[] args) {
-        runAlgo(100);
+        runAlgo(10);
         System.out.println("Done!");
     }
 
