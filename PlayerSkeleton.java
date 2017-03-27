@@ -1,5 +1,6 @@
 package Tetris;
 
+import java.util.Arrays;
 import java.util.Random;
 
 import static Tetris.Constants.*;
@@ -105,14 +106,14 @@ public class PlayerSkeleton {
         for (int i = 0; i < nextPopulation.length; i++) {
             int randomNumber = nature.nextInt(totalFitness);
             int selectedSet = binarySearch(cumulativeFitness, randomNumber);
-            nextPopulation[i] = population[selectedSet];
+            nextPopulation[i] = Arrays.copyOf(population[selectedSet], population[selectedSet].length);
             //System.out.println("Set " + selectedSet + " has been selected.");
         }
         return nextPopulation;
     }
 
     private static void crossOver(double[][] population) {
-        for (int i = 1; i < population.length; i++) {
+        for (int i = 1; i < population.length; i = i + 2) {
             int crossOverPoint = nature.nextInt(population[i].length);
             for (int j = crossOverPoint; j < population[i].length; j++) {
                 double temp = population[i - 1][j];
@@ -145,16 +146,16 @@ public class PlayerSkeleton {
         }
 
         IO io = new IO();
-        double[][] population = io.importPopulation();
 
         for (int i = 0; i < cycles; i++) {
+            double[][] population = io.importPopulation();
             int[] cumulativeFitness = getCumulativeFitness(population);
-            population = select(population, cumulativeFitness);
-            crossOver(population);
-            mutate(population);
+            double[][] nextPopulation = select(population, cumulativeFitness);
+            crossOver(nextPopulation);
+            mutate(nextPopulation);
+            io.exportPopulation(nextPopulation);
         }
 
-        io.exportPopulation(population);
     }
 
     public static void main(String[] args) {
