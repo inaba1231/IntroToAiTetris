@@ -31,7 +31,7 @@ public class BigBang {
 
     }
 
-    /* Initialize first generation of population
+    /*
     public static void main(String args[]) {
 
         IO io = new IO();
@@ -39,7 +39,5 @@ public class BigBang {
 
     }
     */
-
-
 
 }

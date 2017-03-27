@@ -57,7 +57,7 @@ public class PlayerSkeleton {
                 s.draw();
                 s.drawNext(0, 0);
                 try {
-                    Thread.sleep(50);
+                    Thread.sleep(1);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -97,7 +97,9 @@ public class PlayerSkeleton {
         double[][] nextPopulation = new double[POPULATION_SIZE][SET_LENGTH];
         for (int i = 0; i < nextPopulation.length; i++) {
             int randomNumber = nature.nextInt(totalFitness);
-            nextPopulation[i] = population[binarySearch(cumulativeFitness, randomNumber)];
+            int selectedSet = binarySearch(cumulativeFitness, randomNumber);
+            nextPopulation[i] = population[selectedSet];
+            //System.out.println("Set " + selectedSet + " has been selected.");
         }
         return nextPopulation;
     }
@@ -110,6 +112,7 @@ public class PlayerSkeleton {
                 population[i - 1][j] = population[i][j];
                 population[i][j] = temp;
             }
+            //System.out.println("Cross over point for new sets " + (i-1) + " and " + i + " is " + crossOverPoint + ".");
         }
     }
 
@@ -123,6 +126,7 @@ public class PlayerSkeleton {
                     } else {
                         population[i][j] = -mutation;
                     }
+                    //System.out.println("Mutation occurs in new set " + i + " at index " + j + " with mutation value: " + mutation + ".");
                 }
             }
         }
@@ -147,9 +151,9 @@ public class PlayerSkeleton {
     }
 
     public static void main(String[] args) {
-        //BigBang.resetPopulation();
-        
         runAlgo(1);
+
+        System.exit(0);
     }
 
 }
