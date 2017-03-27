@@ -49,12 +49,13 @@ public class PlayerSkeleton {
 
         for (int i = 0; i < population.length; i++) {
             State s = new State();
-            TFrame frame = new TFrame(s);
+            //TFrame frame = new TFrame(s);
             double[] set = population[i];
             PlayerSkeleton p = new PlayerSkeleton(set);
 
             while (!s.hasLost()) {
                 s.makeMove(p.pickMove(s, s.legalMoves()));
+                /*
                 s.draw();
                 s.drawNext(0, 0);
                 try {
@@ -62,16 +63,18 @@ public class PlayerSkeleton {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                */
             }
 
-            frame.dispose();
-            System.out.println("Set " + i + " completed " + s.getRowsCleared() + " rows.");
+            //frame.dispose();
+            //System.out.println("Set " + i + " completed " + s.getRowsCleared() + " rows.");
             bestScore = bestScore < s.getRowsCleared() ? s.getRowsCleared() : bestScore;
             totalFitness += s.getRowsCleared();
             cumulativeFitness[i] = totalFitness;
         }
 
-        System.out.println("Best score is " + bestScore);
+        System.out.println("Best score: " + bestScore);
+
         return cumulativeFitness;
     }
 
@@ -155,7 +158,8 @@ public class PlayerSkeleton {
     }
 
     public static void main(String[] args) {
-        runAlgo(1);
+        runAlgo(100);
+        System.out.println("Done!");
     }
 
 }
