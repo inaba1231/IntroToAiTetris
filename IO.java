@@ -5,7 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import static Tetris.Constant.*;
+import static Tetris.Constants.*;
 
 /**
  *
