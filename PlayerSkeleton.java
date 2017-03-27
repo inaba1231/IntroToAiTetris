@@ -45,10 +45,11 @@ public class PlayerSkeleton {
     private static int[] getCumulativeFitness(double[][] population) {
         int totalFitness = 0;
         int[] cumulativeFitness = new int[population.length];
+        int bestScore = 0;
 
         for (int i = 0; i < population.length; i++) {
             State s = new State();
-            new TFrame(s);
+            TFrame frame = new TFrame(s);
             double[] set = population[i];
             PlayerSkeleton p = new PlayerSkeleton(set);
 
@@ -63,11 +64,14 @@ public class PlayerSkeleton {
                 }
             }
 
+            frame.dispose();
             System.out.println("Set " + i + " completed " + s.getRowsCleared() + " rows.");
+            bestScore = bestScore < s.getRowsCleared() ? s.getRowsCleared() : bestScore;
             totalFitness += s.getRowsCleared();
             cumulativeFitness[i] = totalFitness;
         }
 
+        System.out.println("Best score is " + bestScore);
         return cumulativeFitness;
     }
 
@@ -152,8 +156,6 @@ public class PlayerSkeleton {
 
     public static void main(String[] args) {
         runAlgo(1);
-
-        System.exit(0);
     }
 
 }
