@@ -55,6 +55,46 @@ public class Heuristics {
             }
         }
         feature[20] = holes;
+        
+        // 21    num filled spots (non-weighted)
+        int filledSpots = 0;
+        for (int row = 0; row < ROWS; row++) {
+        	for (int col = 0; col < COLS; col++) {
+        		if (field[row][col] != 0) {
+        			filledSpots += row;
+        		}
+        	}
+        }
+        feature[21] = filledSpots;
+        
+        // 22	num filled spots (weighted)
+        int weightedFilledSpots = 0;
+        for (int row = 0; row < ROWS; row++) {
+        	for (int col = 0; col < COLS; col++) {
+        		if (field[row][col] != 0) {
+        			weightedFilledSpots += row;
+        		}
+        	}
+        }
+        feature[22] = weightedFilledSpots;
+        
+        // 23 num of lines cleared
+        int linesCleared = 0;
+        for (int row = 0; row < ROWS; row++) {
+        	int filledColumns = 0;
+        	for (int col = 0; col < COLS; col++) {
+        		if (field[row][col] == 0) {
+        			break;
+        		}
+        		filledColumns += 1;
+        	}
+        	if (filledColumns == COLS) {
+        		linesCleared += 1;
+        	} else if (filledColumns == 0) {
+        		break;
+        	}
+        }
+        feature[23] = linesCleared;
 
         double value = weight[0];
         for (int i = 0; i < size; i++) {
