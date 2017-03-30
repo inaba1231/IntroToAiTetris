@@ -162,7 +162,7 @@ public class PlayerSkeleton {
     }
 
     public static void main(String[] args) {
-        runAlgo(10, RESET_POPULATION);
+        runAlgo(CYCLE_COUNT, RESET_POPULATION);
         System.out.println("Done!");
     }
 
