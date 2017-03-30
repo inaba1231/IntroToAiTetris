@@ -24,11 +24,23 @@ public class PlayerSkeleton {
         int[] move = {0, 0};
         for (int[] x : legalMoves) {
             int[][] field = copy(s.getField());
-            m.makeMove(field, x[0], x[1], s);
+            m.makeMove(field, x[0], x[1], s.getNextPiece(), s.getTop());
             //l.legalMoves
-            double value = h.heuristic(field);
-            if (value > max) {
-                max = value;
+			
+			//Expectimax algorithm
+			double sum = 0;
+			for(int i = 0; i<7; i++)}{
+				for(int[] possibleMove: l.legalMoves[i]){
+					int[][] helper = copy(field);
+					//todo
+					//deal with s.getTop();
+					m.makeMove(helper, possibleMove[0], possibleMove[1], i, s.getTop());
+					sum += h.heuristic(helper);
+				}
+			}
+			
+            if (sum > max) {
+                max = sum;
                 move[0] = x[0];
                 move[1] = x[1];
             }
