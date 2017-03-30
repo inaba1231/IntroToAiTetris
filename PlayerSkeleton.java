@@ -161,8 +161,8 @@ public class PlayerSkeleton {
 
         IO io = new IO();
         double[][] check = io.importPopulation();
-        if (check.length != POPULATION_SIZE ||
-        		check[0].length != SET_LENGTH) {
+        if (check.length != POPULATION_SIZE
+                || check[0].length != SET_LENGTH) {
             io.exportPopulation(BigBang.resetPopulation());
         }
 
