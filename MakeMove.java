@@ -8,10 +8,10 @@ import static Tetris.Constants.*;
  */
 public class MakeMove {
 
-    public void makeMove(int[][] field, int orient, int slot, State s) {
-        int nextPiece = s.getNextPiece();
+    public void makeMove(int[][] field, int orient, int slot, int nextPiece, int[] sTop) {
+        
         int[] top = new int[COLS];
-        System.arraycopy(s.getTop(), 0, top, 0, COLS);
+        System.arraycopy(sTop, 0, top, 0, COLS);
 
         //height if the first column makes contact
         int height = top[slot] - pBottom[nextPiece][orient][0];
