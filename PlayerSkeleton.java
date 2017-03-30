@@ -9,11 +9,13 @@ public class PlayerSkeleton {
 
     public static Heuristics h;
     public static MakeMove m;
+    public static LegalMoves l;
     public static Random nature;
 
     public PlayerSkeleton(double[] set) {
         h = new Heuristics(set.length, set);
         m = new MakeMove();
+        l = new LegalMoves();
         nature = new Random();
     }
 
@@ -23,6 +25,7 @@ public class PlayerSkeleton {
         for (int[] x : legalMoves) {
             int[][] field = copy(s.getField());
             m.makeMove(field, x[0], x[1], s);
+            //l.legalMoves
             double value = h.heuristic(field);
             if (value > max) {
                 max = value;
