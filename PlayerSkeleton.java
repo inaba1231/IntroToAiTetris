@@ -140,13 +140,13 @@ public class PlayerSkeleton {
         }
     }
 
-    private static void runAlgo(int cycles, boolean resetPopulation) {
+    private static void runAlgo(int cycles) {
         if (cycles < 1) {
             return;
         }
 
         IO io = new IO();
-        if (resetPopulation) {
+        if (io.importPopulation().length != POPULATION_SIZE) {
             io.exportPopulation(BigBang.resetPopulation());
         }
 
@@ -162,7 +162,7 @@ public class PlayerSkeleton {
     }
 
     public static void main(String[] args) {
-        runAlgo(CYCLE_COUNT, RESET_POPULATION);
+        runAlgo(CYCLE_COUNT);
         System.out.println("Done!");
     }
 
