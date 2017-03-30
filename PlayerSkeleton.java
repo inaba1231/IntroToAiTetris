@@ -74,7 +74,7 @@ public class PlayerSkeleton {
             cumulativeFitness[i] = totalFitness;
         }
 
-        System.out.println("Best score: " + bestScore);
+        System.out.println(bestScore);
 
         return cumulativeFitness;
     }
@@ -140,26 +140,29 @@ public class PlayerSkeleton {
         }
     }
 
-    private static void runAlgo(int cycles) {
+    private static void runAlgo(int cycles, boolean resetPopulation) {
         if (cycles < 1) {
             return;
         }
 
         IO io = new IO();
+        if (resetPopulation) {
+            io.exportPopulation(BigBang.resetPopulation());
+        }
 
         for (int i = 0; i < cycles; i++) {
             double[][] population = io.importPopulation();
+            System.out.print("Best score in generation " + (i + 1) + " is: ");
             int[] cumulativeFitness = getCumulativeFitness(population);
             double[][] nextPopulation = select(population, cumulativeFitness);
             crossOver(nextPopulation);
             mutate(nextPopulation);
             io.exportPopulation(nextPopulation);
         }
-
     }
 
     public static void main(String[] args) {
-        runAlgo(10);
+        runAlgo(10, RESET_POPULATION);
         System.out.println("Done!");
     }
 

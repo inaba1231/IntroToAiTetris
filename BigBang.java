@@ -31,13 +31,4 @@ public class BigBang {
 
     }
 
-    /*
-    public static void main(String args[]) {
-
-        IO io = new IO();
-        io.exportPopulation(resetPopulation());
-
-    }
-    */
-
 }
