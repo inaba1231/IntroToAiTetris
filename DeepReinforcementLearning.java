@@ -126,8 +126,35 @@ public class DeepReinforcementLearning {
         io.exportWeights(w);
     }
 
-    public void backwardPropagation() {
-
+    public void backwardPropagation(double[] outputs, Inputs in, double payoff, double[][][] w1_, double[] w2_, double[][][] bias_) {
+        double[][][] current_w1 = w1_;
+        double[][][] current_bias = bias_;
+        double[] current_w2 = w2_;
+            
+        for(int i=249;i>=0;i--) {
+            updateWeightForMove(inputsForThisMove, 
+                    outputForThisMove, payoff, current_w1, 
+                    current_bias, current_w2 );
+        }
+        
+        this.w1_ = current_w1;
+        this.bias_ = current_bias;
+        this.w2_ = current_bias;
+    }
+    
+    updateWeightForMove(double[] inputsForThisMove, 
+            double outputForThisMove, double payoff, double[][][] current_w1, 
+            double[][][] current_bias, double[] current_w2 ){
+        
+        //output layer
+        for(int i=0;i<250;i++) { //for every hidden layer edge
+            updateHiddenLayerWeight(i,current_w2);
+        }
+        
+    }
+    
+    updateHiddenLayerWeight(int i,double[] current_w2, int payoff) {
+        
     }
 
     public int error(int rowsCleared) {
