@@ -119,8 +119,6 @@ public class Heuristics {
 	}
 
 	feature[6] = -(avgDiff / (float) top.length);
-	
-	System.out.println(Arrays.toString(feature));
 
         double value = weight[0];
         for (int i = 0; i < size; i++) {

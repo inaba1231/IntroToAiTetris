@@ -1,6 +1,7 @@
 package Tetris;
 
 import java.awt.Color;
+import java.util.Arrays;
 
 public class State {
 
@@ -151,10 +152,22 @@ public class State {
 	 this.lost = s.hasLost();
 	 this.turn = s.getTurnNumber();
 	 this.cleared = s.getRowsCleared();
-	 this.field = s.getField();
-	 this.top = s.getTop();
+	 this.field = copyField(s.getField());
+	 this.top = Arrays.copyOf(s.getTop(), s.getTop().length);
 	 this.nextPiece = s.getNextPiece();
     }
+    
+    private static int[][] copyField(int[][] srcField) {
+	int[][] copy = new int[ROWS][COLS];
+
+	for (int i = 0; i < ROWS; ++i) {
+		for (int j = 0; j < COLS; ++j) {
+			copy[i][j] = srcField[i][j];
+		}
+	}
+
+	return copy;
+}
 
     //random integer, returns 0-6
     private int randomPiece() {
