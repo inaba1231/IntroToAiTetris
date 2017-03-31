@@ -29,66 +29,67 @@ public class Heuristics {
         double[] feature = new double[size];
     
 	
-	// 0 roughness
+	// 0 height difference between all pairs
         int[] top = s.getTop();
-	int roughness = 0;
+	int heightDiff = 0;
 	for (int i = 0; i < top.length - 1; ++i) {
-		roughness += Math.abs(top[i] - top[i + 1]);
+		heightDiff += Math.abs(top[i] - top[i + 1]);
 	}
-	feature[0] = -(float) roughness;
+	feature[0] = heightDiff;
 	
 	// 1 max column height
 	int maxHeight = Integer.MIN_VALUE;
-	for (int column = 0; column < top.length; ++column) {
+	for (int column = 0; column < top.length; column++) {
 		int height = top[column];
 		if (height > maxHeight) {
 			maxHeight = height;
 		}
 	}
 
-	feature[1] = -(float) maxHeight;
+	feature[1] = maxHeight;
 	
 	// 2 number of rows cleared
 	feature[2] = s.getRowsCleared();
 	
 	// 3 whether game has been lost
-	feature[3] = s.hasLost() ? -10.0 : 10.0;
+	feature[3] = s.hasLost() ? -1 : 1;
 	
-	// 4 number of faults
+	// 4 number of holes
 	int[][] field = s.getField();
-	int numFaults = 0;
+	int numHoles = 0;
 
-	for (int x = 0; x < State.COLS; ++x) {
-		for (int y = top[x] - 1; y >= 0; --y) {
-			if (field[y][x] == 0) {
-				++numFaults;
+	for (int col = 0; col < Constants.COLS; col++) {
+		for (int row = top[col] - 1; row >= 0; row--) {
+			if (field[row][col] == 0) {
+				numHoles++;
 			}
 		}
 	}
-	feature[4] =  -(float) numFaults;
+	feature[4] =  numHoles;
 	
 	// 5 pit depths
 	int sumOfPitDepths = 0;
-	int pitHeight;
-	int leftOfPitHeight;
-	int rightOfPitHeight;
+	
+	int heightOfCol;
+	int heightOfLeftCol;
+	int heightOfRightCol;
 
 	// pit depth of first column
-	pitHeight = top[0];
-	rightOfPitHeight = top[1];
-	int diff = rightOfPitHeight - pitHeight;
-	if (diff > 2) {
-		sumOfPitDepths += diff;
+	heightOfCol = top[0];
+	heightOfRightCol = top[1];
+	int heightDifference = heightOfRightCol - heightOfCol;
+	if (heightDifference > 2) {
+		sumOfPitDepths += heightDifference;
 	}
 
-	for (int col = 0; col < State.COLS - 2; col++) {
-		leftOfPitHeight = top[col];
-		pitHeight = top[col + 1];
-		rightOfPitHeight = top[col + 2];
+	for (int col = 0; col < Constants.COLS - 2; col++) {
+		heightOfLeftCol = top[col];
+		heightOfCol = top[col + 1];
+		heightOfRightCol = top[col + 2];
 
-		int leftDiff = leftOfPitHeight - pitHeight;
-		int rightDiff = rightOfPitHeight - pitHeight;
-		int minDiff = leftDiff < rightDiff ? leftDiff : rightDiff;
+		int leftHeightDifference = heightOfLeftCol - heightOfCol;
+		int rightHeightDifference = heightOfRightCol - heightOfCol;
+		int minDiff = Math.min(leftHeightDifference, rightHeightDifference);
 
 		if (minDiff > 2) {
 			sumOfPitDepths += minDiff;
@@ -96,29 +97,30 @@ public class Heuristics {
 	}
 
 	// pit depth of last column
-	pitHeight = top[State.COLS - 1];
-	leftOfPitHeight = top[State.COLS - 2];
-	diff = leftOfPitHeight - pitHeight;
-	if (diff > 2) {
-		sumOfPitDepths += diff;
+	heightOfCol = top[Constants.COLS - 1];
+	heightOfLeftCol = top[Constants.COLS - 2];
+	heightDifference = heightOfLeftCol - heightOfCol;
+	if (heightDifference > 2) {
+		sumOfPitDepths += heightDifference;
 	}
 
-	feature[5] = -(float) sumOfPitDepths;
+	feature[5] = sumOfPitDepths;
 	
-	// 6 mean height difference
-	int sum = 0;
+	// 6 weighted height difference
+	int totalHeight = 0;
 	for (int height : top) {
-		sum += height;
+		totalHeight += height;
 	}
 
-	float meanHeight = (float) sum / top.length;
+	double meanHeight = (double) totalHeight / top.length;
 
-	float avgDiff = 0;
+	double avgDiff = 0;
+	
 	for (int height : top) {
 		avgDiff += Math.abs(meanHeight - height);
 	}
 
-	feature[6] = -(avgDiff / (float) top.length);
+	feature[6] = avgDiff / top.length;
 
         double value = weight[0];
         for (int i = 0; i < size; i++) {
