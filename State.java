@@ -96,7 +96,6 @@ public class State {
                 }
             }
         }
-
     }
 
     public int[][] getField() {
@@ -146,7 +145,15 @@ public class State {
     //constructor
     public State() {
         nextPiece = randomPiece();
-
+    }
+    
+    public State(State s) {
+	 this.lost = s.hasLost();
+	 this.turn = s.getTurnNumber();
+	 this.cleared = s.getRowsCleared();
+	 this.field = s.getField();
+	 this.top = s.getTop();
+	 this.nextPiece = s.getNextPiece();
     }
 
     //random integer, returns 0-6

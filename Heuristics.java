@@ -1,6 +1,8 @@
 package Tetris;
 
-import static Tetris.Constants.*;
+import static Tetris.Constants.ROWS;
+
+import java.util.Arrays;
 
 /**
  *
@@ -20,90 +22,105 @@ public class Heuristics {
         this.weight = weight;
     }
 
-    public double heuristic(int[][] field) {
-        if (field[0][0] == -1) {
-            return -Double.MAX_VALUE;
-        }
+    
+    
+    public double heuristic(State s) {
+        
         double[] feature = new double[size];
+    
+	
+	// 0 roughness
+        int[] top = s.getTop();
+	int roughness = 0;
+	for (int i = 0; i < top.length - 1; ++i) {
+		roughness += Math.abs(top[i] - top[i + 1]);
+	}
+	feature[0] = -(float) roughness;
+	
+	// 1 max column height
+	int maxHeight = Integer.MIN_VALUE;
+	for (int column = 0; column < top.length; ++column) {
+		int height = top[column];
+		if (height > maxHeight) {
+			maxHeight = height;
+		}
+	}
 
-        //0-9   height
-        for (int i = 0; i < 10; i++) {
-            feature[i] = colHeight(field, i);
-        }
+	feature[1] = -(float) maxHeight;
+	
+	// 2 number of rows cleared
+	feature[2] = s.getRowsCleared();
+	
+	// 3 whether game has been lost
+	feature[3] = s.hasLost() ? -10.0 : 10.0;
+	
+	// 4 number of faults
+	int[][] field = s.getField();
+	int numFaults = 0;
 
-        //10-18 diff btw col heights
-        for (int i = 0; i < 9; i++) {
-            feature[i + 10] = feature[i] - feature[i + 1];
-        }
+	for (int x = 0; x < State.COLS; ++x) {
+		for (int y = top[x] - 1; y >= 0; --y) {
+			if (field[y][x] == 0) {
+				++numFaults;
+			}
+		}
+	}
+	feature[4] =  -(float) numFaults;
+	
+	// 5 pit depths
+	int sumOfPitDepths = 0;
+	int pitHeight;
+	int leftOfPitHeight;
+	int rightOfPitHeight;
 
-        //19    max col height
-        double max = 0;
-        for (int i = 0; i < 10; i++) {
-            if (feature[i] > max) {
-                max = feature[i];
-            }
-        }
-        feature[19] = max;
+	// pit depth of first column
+	pitHeight = top[0];
+	rightOfPitHeight = top[1];
+	int diff = rightOfPitHeight - pitHeight;
+	if (diff > 2) {
+		sumOfPitDepths += diff;
+	}
 
-        //20    num holes
-        int holes = 0;
-        for (int i = 0; i < COLS; i++) {
-            for (int j = 0; j < ROWS - 2; j++) {
-                if (field[j][i] == 0 && j < feature[i]) {
-                    holes++;
-                }
-            }
-        }
-        feature[20] = holes;
+	for (int col = 0; col < State.COLS - 2; col++) {
+		leftOfPitHeight = top[col];
+		pitHeight = top[col + 1];
+		rightOfPitHeight = top[col + 2];
 
-        // 21    num filled spots (non-weighted)
-        int filledSpots = 0;
-        for (int row = 0; row < ROWS; row++) {
-            for (int col = 0; col < COLS; col++) {
-                if (field[row][col] != 0) {
-                    filledSpots += row;
-                }
-            }
-        }
-        feature[21] = filledSpots;
+		int leftDiff = leftOfPitHeight - pitHeight;
+		int rightDiff = rightOfPitHeight - pitHeight;
+		int minDiff = leftDiff < rightDiff ? leftDiff : rightDiff;
 
-        // 22	num filled spots (weighted)
-        int weightedFilledSpots = 0;
-        for (int row = 0; row < ROWS; row++) {
-            for (int col = 0; col < COLS; col++) {
-                if (field[row][col] != 0) {
-                    weightedFilledSpots += row;
-                }
-            }
-        }
-        feature[22] = weightedFilledSpots;
+		if (minDiff > 2) {
+			sumOfPitDepths += minDiff;
+		}
+	}
 
-        // 23 num of lines cleared
-        int linesCleared = 0;
-        for (int row = 0; row < ROWS; row++) {
-            int filledColumns = 0;
-            for (int col = 0; col < COLS; col++) {
-                if (field[row][col] == 0) {
-                    break;
-                }
-                filledColumns += 1;
-            }
-            if (filledColumns == COLS) {
-                linesCleared += 1;
-            } else if (filledColumns == 0) {
-                break;
-            }
-        }
-//        if (linesCleared != 0) {
-//            for (int i = 0; i < COLS; i++) {
-//                for (int j = 0; j < ROWS; j++) {
-//                    System.out.print(field[j][i] + "          ");
-//                }
-//                System.out.println("");
-//            }
-//            System.out.println("-----------------------------------------------------------");
-//        }
-        feature[23] = linesCleared;
+	// pit depth of last column
+	pitHeight = top[State.COLS - 1];
+	leftOfPitHeight = top[State.COLS - 2];
+	diff = leftOfPitHeight - pitHeight;
+	if (diff > 2) {
+		sumOfPitDepths += diff;
+	}
+
+	feature[5] = -(float) sumOfPitDepths;
+	
+	// 6 mean height difference
+	int sum = 0;
+	for (int height : top) {
+		sum += height;
+	}
+
+	float meanHeight = (float) sum / top.length;
+
+	float avgDiff = 0;
+	for (int height : top) {
+		avgDiff += Math.abs(meanHeight - height);
+	}
+
+	feature[6] = -(avgDiff / (float) top.length);
+	
+	System.out.println(Arrays.toString(feature));
 
         double value = weight[0];
         for (int i = 0; i < size; i++) {

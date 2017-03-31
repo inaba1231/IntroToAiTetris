@@ -23,21 +23,13 @@ public class PlayerSkeleton {
         int[] move = {0, 0};
         double max = -Double.MAX_VALUE;
         for (int[] x : legalMoves) {
-            int[][] field = copy(s.getField());
+            State dummyState = new State(s);
+            dummyState.makeMove(x);
+            double sum = h.heuristic(dummyState);
+            /*int[][] field = copy(s.getField());
             m.makeMove(field, x[0], x[1], s.getNextPiece(), s.getTop());
-            //l.legalMoves
-
-            //Expectimax algorithm
-            double sum = 0;
-            for (int i = 0; i < 7; i++) {
-                for (int[] possibleMove : l.legalMoves[i]) {
-                    int[][] helper = copy(field);
-                    //todo
-                    //deal with s.getTop();
-                    m.makeMove(helper, possibleMove[0], possibleMove[1], i, s.getTop());
-                    sum += h.heuristic(helper);
-                }
-            }
+            double sum = h.heuristic(field);*/
+            
             if (sum > max) {
                 max = sum;
                 move[0] = x[0];
@@ -93,11 +85,11 @@ public class PlayerSkeleton {
         return cumulativeFitness;
     }
 
-    private static int binarySearch(int[] array, int number) {
+    public static int binarySearch(int[] array, int number) {
         return binarySearch(array, number, 0, array.length - 1);
     }
 
-    private static int binarySearch(int[] array, int number, int left, int right) {
+    public static int binarySearch(int[] array, int number, int left, int right) {
         if (left == right) {
             return left;
         }
