@@ -19,6 +19,37 @@ public class PlayerSkeleton {
         nature = new Random();
     }
 
+    public double expectimaxAlgo(State s, int[][] field){
+    	double sum = 0;
+    	for(int i = 0; i<7; i++)}{
+			for(int[] possibleMove: l.legalMoves[i]){
+				int[][] helper = copy(field);
+				//todo
+				//deal with s.getTop();
+				m.makeMove(helper, possibleMove[0], possibleMove[1], i, s.getTop());
+				sum += h.heuristic(helper);
+			}
+		}
+		return sum;
+    }
+
+	public double minimaxAlgo(State s, int[][] field){
+		double min = Double.MAX_VALUE;
+		double score = 0;
+		for(int i=0; i<7;i++){
+			for(int[] possibleMove: l.legalMoves[i]){
+				//todo implement alpha-beta pruning
+				int[][] helper = copy(field);
+				m.makeMove(helper, possibleMove[0], possibleMove[1],i, s.getTop());
+				score = h.heuristic(helper);
+				if(score<min){
+					min = score;
+				}
+			}
+		}
+		return min;
+	}
+    
     public int[] pickMove(State s, int[][] legalMoves) {
         double max = -Double.MAX_VALUE;
         int[] move = {0, 0};
@@ -28,19 +59,10 @@ public class PlayerSkeleton {
             //l.legalMoves
 			
 			//Expectimax algorithm
-			double sum = 0;
-			for(int i = 0; i<7; i++)}{
-				for(int[] possibleMove: l.legalMoves[i]){
-					int[][] helper = copy(field);
-					//todo
-					//deal with s.getTop();
-					m.makeMove(helper, possibleMove[0], possibleMove[1], i, s.getTop());
-					sum += h.heuristic(helper);
-				}
-			}
+			double value = expectimaxAlgo(s, field);
 			
-            if (sum > max) {
-                max = sum;
+            if (value > max) {
+                max = value;
                 move[0] = x[0];
                 move[1] = x[1];
             }
