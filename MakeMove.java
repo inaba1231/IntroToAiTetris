@@ -36,7 +36,7 @@ public class MakeMove {
         }
 
         //check for full rows - starting at the top
-        for (int r = height + pHeight[nextPiece][orient] - 1; r >= height; r--) {
+        for (int r = 20; r >= 0; r--) {
             //check all columns in the row
             boolean full = true;
             for (int c = 0; c < COLS; c++) {
@@ -51,13 +51,8 @@ public class MakeMove {
                 for (int c = 0; c < COLS; c++) {
 
                     //slide down all bricks
-                    for (int i = r; i < top[c]; i++) {
+                    for (int i = r; i < 20; i++) {
                         field[i][c] = field[i + 1][c];
-                    }
-                    //lower the top
-                    top[c]--;
-                    while (top[c] >= 1 && field[top[c] - 1][c] == 0) {
-                        top[c]--;
                     }
                 }
             }
