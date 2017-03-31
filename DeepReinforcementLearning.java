@@ -125,8 +125,21 @@ public class DeepReinforcementLearning {
         w.bias_ = this.bias_;
         io.exportWeights(w);
     }
-
-    public void backwardPropagation(double[] outputs, Inputs in, double payoff, double[][][] w1_, double[] w2_, double[][][] bias_) {
+    
+    /* Updates the set of weights w1,bias,w2 to a new better set of weights after carrying out backward propagation through every move.
+     * 
+     * Inputs is the data structure containing all 250 inputs to the input nodes, the 210 inputs to the hidden layer nodes 
+     * and the final input to the output node, for every move. 
+     * Example: in.getInputLayer(n,move) gives value for input node n for a certain move i. in.getHiddenLayer(n,move) works in the same way.
+     * 			in.getFinalInput(move) gives the value for the input to the last output node for move i.
+     * 
+     * Outputs is the object containing all 210 outputs from the hidden layer nodes and the output of the final node for every move.
+     * Example: out.getHiddenlayer(n,move) gives output of hidden layer node n for a certain move i. 
+     * 			out.getFinalOutput(move) gives the output of the final node for a certain move i
+     * 
+     * payoff is the payoff achieved at the end of this game
+     */
+    public void backwardPropagation(Inputs in, Outputs out, double payoff, double[][][] w1_, double[] w2_, double[][][] bias_) {
         double[][][] current_w1 = w1_;
         double[][][] current_bias = bias_;
         double[] current_w2 = w2_;
