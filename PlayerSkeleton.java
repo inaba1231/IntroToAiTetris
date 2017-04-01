@@ -166,11 +166,6 @@ public class PlayerSkeleton {
         }
 
         IO io = new IO();
-        double[][] check = io.importPopulation();
-        if (check.length != POPULATION_SIZE
-                || check[0].length != SET_LENGTH) {
-            io.exportPopulation(BigBang.resetPopulation());
-        }
 
         for (int i = 0; i < cycles; i++) {
             double[][] population = io.importPopulation();
@@ -181,6 +176,7 @@ public class PlayerSkeleton {
             mutate(nextPopulation);
             io.exportPopulation(nextPopulation);
         }
+
     }
 
     public static void main(String[] args) {
