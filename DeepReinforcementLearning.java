@@ -173,6 +173,12 @@ public class DeepReinforcementLearning {
         			dh2 = out.getHiddenLayer(l,n)*(1-out.getHiddenlayer(l,n));
         			dh3 = in.getInputLayer(k,n);
         			
+        			//update bias weights
+        			if(k<40) {
+        			    current_bias[k/10][k%10][l] = current_bias[k/10][k%10][l] - (dh1*dh2*dh3);
+        			} else { //update w1
+        			    current_w1[k/10][k%10][l] = current_w1[k/10][k%10][l] - (dh1*dh2*dh3);
+        			}
         		}
         	}
         }
