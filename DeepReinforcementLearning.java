@@ -130,10 +130,9 @@ public class DeepReinforcementLearning {
      * 
      * n is the number of moves that were played in this game
      * 
-     * Inputs is the data structure containing all 250 inputs to the input nodes, the 210 inputs to the hidden layer nodes 
-     * and the final input to the output node, for every move. 
-     * Example: in.getInputLayer(n,move) gives value for input node n for a certain move i. in.getHiddenLayer(n,move) works in the same way.
-     * 			in.getFinalInput(move) gives the value for the input to the last output node for move i. (move starts from 1 to last move)
+     * Inputs is the data structure containing all 250 inputs to the input nodes
+     * Example: in.getInputLayer(n,move) gives value for input node n for a certain move i. (move starts from 1 to last move)
+     * 			first 40n can be the bias nodes, rest of the 210n are the w1 nodes?
      * 
      * Outputs is the object containing all 210 outputs from the hidden layer nodes and the output of the final node for every move.
      * Example: out.getHiddenLayer(n,move) gives output of hidden layer node n for a certain move i. 
@@ -146,19 +145,36 @@ public class DeepReinforcementLearning {
         double[][][] current_bias = bias_;
         double[] current_w2 = w2_;
             
-        for(int i=n;i>0;i--) {
-        	//Update current weights after doing calculation for this move
-            
-        	//update outer layer weights
-        	for(int j=0;j<210;j++) {
-            	double d1 = -1*payoff;
-            	double d2 = out.getFinalOutput(n)*(1-out.getFinalOutput(n));
-            	double d3 = out.getHiddenLayer(j,n);
-            	
-            	current_w2[j] = current_w2[j] - (d1*d2*d3);
+        for(int i=n;i>0;i--) { //for every move starting from the last move
+        	//keep a copy of previous hidden layer weights
+        	 double[] oldw2 = new double[current_w2.length];
+             System.arraycopy( current_w2, 0, oldw2, 0, current_w2.length );
+        	
+        	//Update current weights after doing calculation for this move        
+        	
+           //update outer layer weights
+            double do1 = -1*payoff;
+        	double do2 = out.getFinalOutput(n)*(1-out.getFinalOutput(n));
+        	for(int j=0;j<210;j++) {        	
+            	double do3 = out.getHiddenLayer(j,n);
+            	current_w2[j] = current_w2[j] - (do1*do2*do3);
             }
         	
         	//update inner layer weights
+        	for(k=0;k<250;k++) { //for every input node
+        		for(l=0;l<210;l++) { //for every outgoing edge of that node
+        			double dh1;
+        			double dh2;
+        			double dh3;
+        			double dh11 = do1*do2;
+        			double dh12 = oldw2[l];
+        			
+        			dh1 = dh11*dh22;   			
+        			dh2 = out.getHiddenLayer(l,n)*(1-out.getHiddenlayer(l,n));
+        			dh3 = in.getInputLayer(k,n);
+        			
+        		}
+        	}
         }
         
         this.w1_ = current_w1;
