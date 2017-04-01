@@ -132,7 +132,7 @@ public class DeepReinforcementLearning {
      * 
      * Inputs is the data structure containing all 250 inputs to the input nodes
      * Example: in.getInputLayer(n,move) gives value for input node n for a certain move i. (move starts from 1 to last move)
-     * 			first 40n can be the bias nodes, rest of the 210n are the w1 nodes?
+     * 			first 40n must be the bias nodes, rest of the 210n are the w1 nodes
      * 
      * Outputs is the object containing all 210 outputs from the hidden layer nodes and the output of the final node for every move.
      * Example: out.getHiddenLayer(n,move) gives output of hidden layer node n for a certain move i. 
