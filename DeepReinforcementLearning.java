@@ -128,26 +128,37 @@ public class DeepReinforcementLearning {
     
     /* Updates the set of weights w1,bias,w2 to a new better set of weights after carrying out backward propagation through every move.
      * 
+     * n is the number of moves that were played in this game
+     * 
      * Inputs is the data structure containing all 250 inputs to the input nodes, the 210 inputs to the hidden layer nodes 
      * and the final input to the output node, for every move. 
      * Example: in.getInputLayer(n,move) gives value for input node n for a certain move i. in.getHiddenLayer(n,move) works in the same way.
-     * 			in.getFinalInput(move) gives the value for the input to the last output node for move i.
+     * 			in.getFinalInput(move) gives the value for the input to the last output node for move i. (move starts from 1 to last move)
      * 
      * Outputs is the object containing all 210 outputs from the hidden layer nodes and the output of the final node for every move.
-     * Example: out.getHiddenlayer(n,move) gives output of hidden layer node n for a certain move i. 
-     * 			out.getFinalOutput(move) gives the output of the final node for a certain move i
+     * Example: out.getHiddenLayer(n,move) gives output of hidden layer node n for a certain move i. 
+     * 			out.getFinalOutput(move) gives the output of the final node for a certain move i. (move starts from 1 to last move)
      * 
      * payoff is the payoff achieved at the end of this game
      */
-    public void backwardPropagation(Inputs in, Outputs out, double payoff, double[][][] w1_, double[] w2_, double[][][] bias_) {
+    public void backwardPropagation(int n, Inputs in, Outputs out, double payoff, double[][][] w1_, double[] w2_, double[][][] bias_) {
         double[][][] current_w1 = w1_;
         double[][][] current_bias = bias_;
         double[] current_w2 = w2_;
             
-        for(int i=249;i>=0;i--) {
-            updateWeightForMove(inputsForThisMove, 
-                    outputForThisMove, payoff, current_w1, 
-                    current_bias, current_w2 );
+        for(int i=n;i>0;i--) {
+        	//Update current weights after doing calculation for this move
+            
+        	//update outer layer weights
+        	for(int j=0;j<210;j++) {
+            	double d1 = -1*payoff;
+            	double d2 = out.getFinalOutput(n)*(1-out.getFinalOutput(n));
+            	double d3 = out.getHiddenLayer(j,n);
+            	
+            	current_w2[j] = current_w2[j] - (d1*d2*d3);
+            }
+        	
+        	//update inner layer weights
         }
         
         this.w1_ = current_w1;
@@ -155,20 +166,7 @@ public class DeepReinforcementLearning {
         this.w2_ = current_bias;
     }
     
-    updateWeightForMove(double[] inputsForThisMove, 
-            double outputForThisMove, double payoff, double[][][] current_w1, 
-            double[][][] current_bias, double[] current_w2 ){
-        
-        //output layer
-        for(int i=0;i<250;i++) { //for every hidden layer edge
-            updateHiddenLayerWeight(i,current_w2);
-        }
-        
-    }
-    
-    updateHiddenLayerWeight(int i,double[] current_w2, int payoff) {
-        
-    }
+  
 
     public int error(int rowsCleared) {
         return rowsCleared - maxRowsCleared;
