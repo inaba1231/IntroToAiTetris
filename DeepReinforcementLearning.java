@@ -161,17 +161,17 @@ public class DeepReinforcementLearning {
             }
         	
         	//update inner layer weights
+        	double dh11 = do1*do2;
         	for(k=0;k<250;k++) { //for every input node
+        	    double dh3 = in.getInputLayer(k,n);
         		for(l=0;l<210;l++) { //for every outgoing edge of that node
         			double dh1;
-        			double dh2;
-        			double dh3;
-        			double dh11 = do1*do2;
+        			double dh2;        			
         			double dh12 = oldw2[l];
         			
         			dh1 = dh11*dh22;   			
         			dh2 = out.getHiddenLayer(l,n)*(1-out.getHiddenlayer(l,n));
-        			dh3 = in.getInputLayer(k,n);
+        			
         			
         			//update bias weights
         			if(k<40) {
