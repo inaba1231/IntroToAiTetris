@@ -1,6 +1,7 @@
 package Tetris;
 
 import java.text.DecimalFormat;
+import java.util.LinkedList;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -22,6 +23,7 @@ public class DeepReinforcementLearning {
     Weights w;
     IO io;
     public int maxRowsCleared = 1;
+    private LinkedList<Move> moveList = new LinkedList();
 
     public DeepReinforcementLearning(boolean reset) {
         io = new IO();
@@ -113,9 +115,11 @@ public class DeepReinforcementLearning {
         for (int i = 0; i < NODES; i++) {
             value += layer[i] * w2_[i];
         }
+        value = sigmoid(value);
+        moveList.add(new Move(field, move, layer, value));
 
         //Sigmoid
-        return sigmoid(value);
+        return value;
     }
 
     public void updateWeights() {
@@ -124,8 +128,9 @@ public class DeepReinforcementLearning {
         w.w2_ = this.w2_;
         w.bias_ = this.bias_;
         io.exportWeights(w);
+        moveList.clear();
     }
-    
+
     /* Updates the set of weights w1,bias,w2 to a new better set of weights after carrying out backward propagation through every move.
      * 
      * n is the number of moves that were played in this game
@@ -144,51 +149,47 @@ public class DeepReinforcementLearning {
         double[][][] current_w1 = w1_;
         double[][][] current_bias = bias_;
         double[] current_w2 = w2_;
-            
-        for(int i=n;i>0;i--) { //for every move starting from the last move
-        	//keep a copy of previous hidden layer weights
-        	 double[] oldw2 = new double[current_w2.length];
-             System.arraycopy( current_w2, 0, oldw2, 0, current_w2.length );
-        	
-        	//Update current weights after doing calculation for this move        
-        	
-           //update outer layer weights
-            double do1 = -1*payoff;
-        	double do2 = out.getFinalOutput(n)*(1-out.getFinalOutput(n));
-        	for(int j=0;j<210;j++) {        	
-            	double do3 = out.getHiddenLayer(j,n);
-            	current_w2[j] = current_w2[j] - (do1*do2*do3);
+
+        for (int i = n; i > 0; i--) { //for every move starting from the last move
+            //keep a copy of previous hidden layer weights
+            double[] oldw2 = new double[current_w2.length];
+            System.arraycopy(current_w2, 0, oldw2, 0, current_w2.length);
+
+            //Update current weights after doing calculation for this move        
+            //update outer layer weights
+            double do1 = -1 * payoff;
+            double do2 = out.getFinalOutput(n) * (1 - out.getFinalOutput(n));
+            for (int j = 0; j < 210; j++) {
+                double do3 = out.getHiddenLayer(j, n);
+                current_w2[j] = current_w2[j] - (do1 * do2 * do3);
             }
-        	
-        	//update inner layer weights
-        	double dh11 = do1*do2;
-        	for(k=0;k<250;k++) { //for every input node
-        	    double dh3 = in.getInputLayer(k,n);
-        		for(l=0;l<210;l++) { //for every outgoing edge of that node
-        			double dh1;
-        			double dh2;        			
-        			double dh12 = oldw2[l];
-        			
-        			dh1 = dh11*dh22;   			
-        			dh2 = out.getHiddenLayer(l,n)*(1-out.getHiddenlayer(l,n));
-        			
-        			
-        			//update bias weights
-        			if(k<40) {
-        			    current_bias[k/10][k%10][l] = current_bias[k/10][k%10][l] - (dh1*dh2*dh3);
-        			} else { //update w1
-        			    current_w1[k/10][k%10][l] = current_w1[k/10][k%10][l] - (dh1*dh2*dh3);
-        			}
-        		}
-        	}
+
+            //update inner layer weights
+            double dh11 = do1 * do2;
+            for (k = 0; k < 250; k++) { //for every input node
+                double dh3 = in.getInputLayer(k, n);
+                for (l = 0; l < 210; l++) { //for every outgoing edge of that node
+                    double dh1;
+                    double dh2;
+                    double dh12 = oldw2[l];
+
+                    dh1 = dh11 * dh22;
+                    dh2 = out.getHiddenLayer(l, n) * (1 - out.getHiddenlayer(l, n));
+
+                    //update bias weights
+                    if (k < 40) {
+                        current_bias[k / 10][k % 10][l] = current_bias[k / 10][k % 10][l] - (dh1 * dh2 * dh3);
+                    } else { //update w1
+                        current_w1[k / 10][k % 10][l] = current_w1[k / 10][k % 10][l] - (dh1 * dh2 * dh3);
+                    }
+                }
+            }
         }
-        
+
         this.w1_ = current_w1;
         this.bias_ = current_bias;
         this.w2_ = current_bias;
     }
-    
-  
 
     public int error(int rowsCleared) {
         return rowsCleared - maxRowsCleared;
