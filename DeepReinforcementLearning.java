@@ -123,7 +123,7 @@ public class DeepReinforcementLearning {
     }
 
     public void updateWeights() {
-        backwardPropagation();
+        backwardPropagation(moveList.size(), moveList, payoff, this.w1_,this.w2_,this.bias_);
         w.w1_ = this.w1_;
         w.w2_ = this.w2_;
         w.bias_ = this.bias_;
@@ -145,7 +145,7 @@ public class DeepReinforcementLearning {
      * 
      * payoff is the payoff achieved at the end of this game
      */
-    public void backwardPropagation(int n, Inputs in, Outputs out, double payoff, double[][][] w1_, double[] w2_, double[][][] bias_) {
+    public void backwardPropagation(int n,LinkedList<Move> moveList, double payoff, double[][][] w1_, double[] w2_, double[][][] bias_) {
         double[][][] current_w1 = w1_;
         double[][][] current_bias = bias_;
         double[] current_w2 = w2_;
@@ -197,6 +197,7 @@ public class DeepReinforcementLearning {
         this.w2_ = current_w2;
         this.bias_ = current_bias;
     }
+    
 
     public int error(int rowsCleared) {
         return rowsCleared - maxRowsCleared;
