@@ -122,7 +122,7 @@ public class DeepReinforcementLearning {
         return value;
     }
 
-    public void updateWeights() {
+    public void updateWeights(double payoff) {
         backwardPropagation(moveList.size(), moveList, payoff, this.w1_,this.w2_,this.bias_);
         w.w1_ = this.w1_;
         w.w2_ = this.w2_;
