@@ -169,18 +169,19 @@ public class DeepReinforcementLearning {
             double dh11 = do1 * do2;
             for (int k = 0; k < 25; k++) { // for every input node
                 for (int m = 0; m < 10; m++) {
+                	double dh3;
                     if (k < 4) { //bias nodes
-                        double dh3 = currMove.getBias()[k][m];
+                        dh3 = currMove.getBias()[k][m];
                     } else {
-                        double dh3 = currMove.getInputLayer()[k - 4][m];
+                        dh3 = currMove.getInputLayer()[k - 4][m];
                     }
                     for (int l = 0; l < 210; l++) { // for every outgoing edge of that node
                         double dh1;
                         double dh2;
                         double dh12 = oldw2[l];
 
-                        dh1 = dh11 * dh22;
-                        dh2 = currMove.getHiddenLayer()[l] * (1 - currMove.getHiddenlayer()[l]);
+                        dh1 = dh11 * dh12;
+                        dh2 = currMove.getHiddenLayer()[l] * (1 - currMove.getHiddenLayer()[l]);
 
                         // update bias weights
                         if (k < 4) {
