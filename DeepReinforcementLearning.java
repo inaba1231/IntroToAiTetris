@@ -150,8 +150,8 @@ public class DeepReinforcementLearning {
         double[][][] current_bias = bias_;
         double[] current_w2 = w2_;
 
-        for (int i = n-1; i >= 0; i--) { //for every move starting from the last move
-        	Move currMove = moveList.get(i);
+        for (int i = n - 1; i >= 0; i--) { //for every move starting from the last move
+            Move currMove = moveList.get(i);
             //keep a copy of previous hidden layer weights
             double[] oldw2 = new double[current_w2.length];
             System.arraycopy(current_w2, 0, oldw2, 0, current_w2.length);
@@ -167,35 +167,35 @@ public class DeepReinforcementLearning {
 
             //update inner layer weights
             double dh11 = do1 * do2;
-			for (k = 0; k < 25; k++) { // for every input node
-				for (m = 0; m < 10; m++) {
-					if(k<4) { //bias nodes
-						double dh3 = currMove.getBias()[k][m];
-					} else {
-						double dh3 = currMove.getInputLayer()[k-4][m];
-					}
-					for (l = 0; l < 210; l++) { // for every outgoing edge of that node
-						double dh1;
-						double dh2;
-						double dh12 = oldw2[l];
+            for (int k = 0; k < 25; k++) { // for every input node
+                for (int m = 0; m < 10; m++) {
+                    if (k < 4) { //bias nodes
+                        double dh3 = currMove.getBias()[k][m];
+                    } else {
+                        double dh3 = currMove.getInputLayer()[k - 4][m];
+                    }
+                    for (int l = 0; l < 210; l++) { // for every outgoing edge of that node
+                        double dh1;
+                        double dh2;
+                        double dh12 = oldw2[l];
 
-						dh1 = dh11 * dh22;
-						dh2 = currMove.getHiddenLayer()[l] * (1 - currMove.getHiddenlayer()[l]);
+                        dh1 = dh11 * dh22;
+                        dh2 = currMove.getHiddenLayer()[l] * (1 - currMove.getHiddenlayer()[l]);
 
-						// update bias weights
-						if (k < 4) {
-							current_bias[k][m][l] = current_bias[k][m][l] - (dh1 * dh2 * dh3);
-						} else { // update w1
-							current_w1[k-4][m][l] = current_w1[k-4][m][l] - (dh1 * dh2 * dh3);
-						}
-					}
-				}
-			}
+                        // update bias weights
+                        if (k < 4) {
+                            current_bias[k][m][l] = current_bias[k][m][l] - (dh1 * dh2 * dh3);
+                        } else { // update w1
+                            current_w1[k - 4][m][l] = current_w1[k - 4][m][l] - (dh1 * dh2 * dh3);
+                        }
+                    }
+                }
+            }
         }
 
         this.w1_ = current_w1;
+        this.w2_ = current_w2;
         this.bias_ = current_bias;
-        this.w2_ = current_bias;
     }
 
     public int error(int rowsCleared) {
