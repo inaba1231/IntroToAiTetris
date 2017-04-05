@@ -28,14 +28,19 @@ public class PlayerSkeleton {
     }
 
     public static void main(String[] args) {
+    	int bestScore = 0;
         DeepReinforcementLearning d = new DeepReinforcementLearning(true);
         for (int iter = 0; iter < 10; iter++) {
             State s = new State();
             while (!s.hasLost()) {
                 s.makeMove(d.pickMove(s));
             }
-            System.out.println("Number of Rows Cleared: " + s.getRowsCleared());
-            d.updateWeights();
+            int currRowsCleared = s.getRowsCleared();
+            System.out.println("Number of Rows Cleared: " + currRowsCleared);
+            if(currRowsCleared>bestScore) {
+            	bestScore = currRowsCleared;
+            }
+            d.updateWeights(currRowsCleared - bestScore);
         }
     }
 
