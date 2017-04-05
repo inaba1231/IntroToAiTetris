@@ -40,7 +40,7 @@ public class PlayerSkeleton {
             if(currRowsCleared>bestScore) {
             	bestScore = currRowsCleared;
             }
-            d.updateWeights(currRowsCleared - bestScore);
+            d.updateWeights((double)(currRowsCleared - bestScore));
         }
     }
 
