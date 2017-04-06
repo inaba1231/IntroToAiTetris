@@ -58,8 +58,16 @@ public class DeepReinforcementLearning {
     public int[] pickMove(State s) {
         int counter = s.legalMoves().length;
         double[] values = new double[counter];
+        int[][] field = s.getField();
+        for (int j = 0; j < ROWS; j++) {
+            for (int k = 0; k < COLS; k++) {
+                if (field[j][k] != 0) {
+                    field[j][k] = 1;
+                }
+            }
+        }
         for (int i = 0; i < counter; i++) {
-            double value = neural(s.getField(), convert(s.legalMoves()[i], s.getNextPiece()));
+            double value = neural(field, convert(s.legalMoves()[i], s.getNextPiece()));
             System.out.println("value: " + df.format(value));
 
             //If there is a larger than 50% chance of dropping, we return the move
@@ -123,7 +131,7 @@ public class DeepReinforcementLearning {
     }
 
     public void updateWeights(double payoff) {
-        backwardPropagation(moveList.size(), moveList, payoff, this.w1_,this.w2_,this.bias_);
+        backwardPropagation(moveList.size(), moveList, payoff, this.w1_, this.w2_, this.bias_);
         w.w1_ = this.w1_;
         w.w2_ = this.w2_;
         w.bias_ = this.bias_;
@@ -145,7 +153,7 @@ public class DeepReinforcementLearning {
      * 
      * payoff is the payoff achieved at the end of this game
      */
-    public void backwardPropagation(int n,LinkedList<Move> moveList, double payoff, double[][][] w1_, double[] w2_, double[][][] bias_) {
+    public void backwardPropagation(int n, LinkedList<Move> moveList, double payoff, double[][][] w1_, double[] w2_, double[][][] bias_) {
         double[][][] current_w1 = w1_;
         double[][][] current_bias = bias_;
         double[] current_w2 = w2_;
@@ -169,7 +177,7 @@ public class DeepReinforcementLearning {
             double dh11 = do1 * do2;
             for (int k = 0; k < 25; k++) { // for every input node
                 for (int m = 0; m < 10; m++) {
-                	double dh3;
+                    double dh3;
                     if (k < 4) { //bias nodes
                         dh3 = currMove.getBias()[k][m];
                     } else {
@@ -198,7 +206,6 @@ public class DeepReinforcementLearning {
         this.w2_ = current_w2;
         this.bias_ = current_bias;
     }
-    
 
     public int error(int rowsCleared) {
         return rowsCleared - maxRowsCleared;
