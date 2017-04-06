@@ -60,7 +60,7 @@ public class DeepReinforcementLearning {
         double[] values = new double[counter];
         for (int i = 0; i < counter; i++) {
             double value = neural(s.getField(), convert(s.legalMoves()[i], s.getNextPiece()));
-            System.out.println("value: " + df.format(value));
+            //System.out.println("value: " + value);
 
             //If there is a larger than 50% chance of dropping, we return the move
             //else switch move
@@ -81,7 +81,7 @@ public class DeepReinforcementLearning {
                 move = i;
             }
         }
-        System.err.println("Full Clear");
+        //System.out.println("FULL CLEAR");
         return s.legalMoves()[move];
     }
 
@@ -104,16 +104,19 @@ public class DeepReinforcementLearning {
             }
 
             //ReLU
-            if (layer[i] < 0) {
-                layer[i] = 0;
-            }
+            //if (layer[i] < 0) {
+             //   layer[i] = 0;
+            //}
         }
 
         //Second layer
         double value = 0;
 
         for (int i = 0; i < NODES; i++) {
+            
+            layer[i] = sigmoid(layer[i]);
             value += layer[i] * w2_[i];
+            
         }
         value = sigmoid(value);
         moveList.add(new Move(field, move, layer, value));
@@ -122,13 +125,72 @@ public class DeepReinforcementLearning {
         return value;
     }
 
-    public void updateWeights(double payoff) {
+    public void updateWeights(int currRowsCleared) {
+        if(currRowsCleared>this.maxRowsCleared) {
+            this.maxRowsCleared = currRowsCleared;
+        }
+        double payoff;
+        if (currRowsCleared>10) {
+            payoff = error(currRowsCleared);
+        } else {
+            payoff  = calculateInitialPayoff(currRowsCleared);
+            System.out.println(payoff);
+        }
+        payoff = sigmoid(payoff);
         backwardPropagation(moveList.size(), moveList, payoff, this.w1_,this.w2_,this.bias_);
         w.w1_ = this.w1_;
         w.w2_ = this.w2_;
         w.bias_ = this.bias_;
         io.exportWeights(w);
         moveList.clear();
+    }
+
+    private double calculateInitialPayoff(int currRowsCleared) {
+        Move secondLastMove = this.moveList.get(this.moveList.size()-1);
+        int[][] field = secondLastMove.getInputLayer();
+        int[] heights = new int[10];
+        int aggregateHeight = 0;
+        
+        for (int i = 0; i < 10; i++) {
+            heights[i] = colHeight(field, i);
+            aggregateHeight += heights[i];
+        }
+        
+        int holes = 0;
+        for (int i = 0; i < COLS; i++) {
+            for (int j = 0; j < ROWS - 2; j++) {
+                if (field[j][i] == 0 && j < heights[i]) {
+                    holes++;
+                }
+            }
+        }
+        
+        int bumpiness = 0;
+        for(int i=0; i<9; i++) {
+            bumpiness += Math.abs(heights[i] - heights[i+1]);
+        }
+        
+        int gridsFilled = 0;
+        
+        for(int i=0; i<21; i++) {
+            for(int j = 0; j<10; j++) {
+                if(field[i][j] > 0) {
+                    gridsFilled++;
+                }
+            }
+        }
+        
+        return -0.51*aggregateHeight + 0.76*currRowsCleared - 0.36*holes - 0.18*bumpiness + 0.7*gridsFilled;
+        
+    }
+    
+    public int colHeight(int[][] field, int col) {
+        for (int x = ROWS - 2; x >= 0; x--) {
+            if (field[x][col] != 0) {
+                return x + 1;
+            }
+        }
+        return 0;
     }
 
     /* Updates the set of weights w1,bias,w2 to a new better set of weights after carrying out backward propagation through every move.
@@ -146,6 +208,7 @@ public class DeepReinforcementLearning {
      * payoff is the payoff achieved at the end of this game
      */
     public void backwardPropagation(int n,LinkedList<Move> moveList, double payoff, double[][][] w1_, double[] w2_, double[][][] bias_) {
+        int learning_rate = 5;
         double[][][] current_w1 = w1_;
         double[][][] current_bias = bias_;
         double[] current_w2 = w2_;

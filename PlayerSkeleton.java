@@ -28,23 +28,26 @@ public class PlayerSkeleton {
     }
 
     public static void main(String[] args) {
-    	int bestScore = 0;
         DeepReinforcementLearning d = new DeepReinforcementLearning(true);
-        for (int iter = 0; iter < 10; iter++) {
+        for (int iter = 0; iter < 100; iter++) {
             State s = new State();
+            TFrame frame = new TFrame(s);
             while (!s.hasLost()) {
                 s.makeMove(d.pickMove(s));
+                s.draw();
+                s.drawNext(0,0);
             }
+            frame.dispose();
             int currRowsCleared = s.getRowsCleared();
-            System.out.println("Number of Rows Cleared: " + currRowsCleared);
-            if(currRowsCleared>bestScore) {
-            	bestScore = currRowsCleared;
-            }
-            d.updateWeights((double)(currRowsCleared - bestScore));
+            
+            System.out.println(iter + " Number of Rows Cleared: " + currRowsCleared);
+            d.updateWeights(currRowsCleared);
         }
     }
 
-//    public static void main(String[] args) {
+
+
+    //    public static void main(String[] args) {
 //        h = new Heuristics(size, weight);
 //        m = new MakeMove();
 //        System.out.println(iteration());
