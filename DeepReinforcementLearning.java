@@ -67,13 +67,8 @@ public class DeepReinforcementLearning {
             }
         }
         for (int i = 0; i < counter; i++) {
-<<<<<<< HEAD
-            double value = neural(s.getField(), convert(s.legalMoves()[i], s.getNextPiece()));
-            //System.out.println("value: " + value);
-=======
             double value = neural(field, convert(s.legalMoves()[i], s.getNextPiece()));
-            System.out.println("value: " + df.format(value));
->>>>>>> 544d17a2db7f036546f70809dcd2dd36d29c7616
+            //System.out.println("value: " + df.format(value));
 
             //If there is a larger than 50% chance of dropping, we return the move
             //else switch move
@@ -195,7 +190,21 @@ public class DeepReinforcementLearning {
             }
         }
         
-        return -0.51*aggregateHeight + 0.76*currRowsCleared - 0.36*holes - 0.18*bumpiness + 0.7*gridsFilled;
+        double colsProportion = 0;
+        
+        for(int i=0; i<9; i++) {
+            if(heights[i]>0) {
+                colsProportion++;
+            }
+        }
+        colsProportion = colsProportion/10;
+        
+        if(colsProportion<=0.7) {
+            colsProportion = colsProportion*-1;
+        }
+        
+        
+        return 0.45*colsProportion+ 0.5*(aggregateHeight-55) + 0.76*currRowsCleared - 0.3*holes - 0.5*bumpiness + 0.2*gridsFilled;
         
     }
     
@@ -222,12 +231,9 @@ public class DeepReinforcementLearning {
      * 
      * payoff is the payoff achieved at the end of this game
      */
-<<<<<<< HEAD
+
     public void backwardPropagation(int n,LinkedList<Move> moveList, double payoff, double[][][] w1_, double[] w2_, double[][][] bias_) {
         int learning_rate = 5;
-=======
-    public void backwardPropagation(int n, LinkedList<Move> moveList, double payoff, double[][][] w1_, double[] w2_, double[][][] bias_) {
->>>>>>> 544d17a2db7f036546f70809dcd2dd36d29c7616
         double[][][] current_w1 = w1_;
         double[][][] current_bias = bias_;
         double[] current_w2 = w2_;
@@ -240,7 +246,7 @@ public class DeepReinforcementLearning {
 
             //Update current weights after doing calculation for this move        
             //update outer layer weights
-            double do1 = -1 * payoff;
+            double do1 = payoff;
             double do2 = currMove.getFinalOutput() * (1 - currMove.getFinalOutput());
             for (int j = 0; j < 210; j++) {
                 double do3 = currMove.getHiddenLayer()[j];

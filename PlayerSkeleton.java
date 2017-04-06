@@ -28,7 +28,7 @@ public class PlayerSkeleton {
     }
 
     public static void main(String[] args) {
-        DeepReinforcementLearning d = new DeepReinforcementLearning(true);
+        DeepReinforcementLearning d = new DeepReinforcementLearning(false);
         for (int iter = 0; iter < 100; iter++) {
             State s = new State();
             TFrame frame = new TFrame(s);
