@@ -57,7 +57,7 @@ public class PlayerSkeleton {
 				alpha = largest;
 			}
 			if(beta>alpha){
-				return 0; //prune
+				return -Double.MAX_VALUE; //prune //prune
 			}
 		}
 		return minimax;
