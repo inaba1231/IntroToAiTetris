@@ -3,6 +3,8 @@ package Tetris;
 import java.util.Arrays;
 import java.util.Random;
 
+import Tetris.Heuristics;
+
 import static Tetris.Constants.*;
 
 public class PlayerSkeleton {
@@ -19,32 +21,67 @@ public class PlayerSkeleton {
         nature = new Random();
     }
 
+    public double expectimaxAlgo(State s, int[][] field){
+    	double sum = 0;
+    	for(int i = 0; i<7; i++)}{
+			for(int[] possibleMove: l.legalMoves[i]){
+				int[][] helper = copy(field);
+				//todo
+				//deal with s.getTop();
+				m.makeMove(helper, possibleMove[0], possibleMove[1], i, s.getTop());
+				sum += h.heuristic(helper);
+			}
+		}
+		return sum;
+    }
+
+	public double minimaxAlgo(State s, int[][] field, double beta){
+		double alpha = Double.MAX_VALUE
+		double score = 0;
+		for(int i=0; i<7;i++){
+			double largest = -Double.MAX_VALUE;
+			boolean broken = false;
+			for(int[] possibleMove: l.legalMoves[i]){
+				int[][] helper = copy(field);
+				m.makeMove(helper, possibleMove[0], possibleMove[1],i, s.getTop());
+				score = h.heuristic(helper);
+				if(score>minimax){
+					broken = true;
+					break; //prune
+				}
+				if(score>largest){
+					largest = score;
+				}
+			}
+			if(alpha>largest && !broken){
+				alpha = largest;
+			}
+			if(beta>alpha){
+				return 0; //prune
+			}
+		}
+		return minimax;
+	}
+    
     public int[] pickMove(State s, int[][] legalMoves) {
-        int[] move = {0, 0};
         double max = -Double.MAX_VALUE;
+        int[] move = {0, 0};
         for (int[] x : legalMoves) {
-            State dummyState = new State(s);
-            dummyState.makeMove(x);
-            double sum = h.heuristic(dummyState);
-            
-            /*int[][] field = copy(s.getField());
+            int[][] field = copy(s.getField());
             m.makeMove(field, x[0], x[1], s.getNextPiece(), s.getTop());
-            double sum = h.heuristic(field);
-	    //Expectimax algorithm
-            double sum = 0;
-            for (int i = 0; i < 7; i++) {
-                for (int[] possibleMove : l.legalMoves[i]) {
-                    int[][] helper = copy(field);
-                    //todo
-                    //deal with s.getTop();
-                    m.makeMove(helper, possibleMove[0], possibleMove[1], i, s.getTop());
-                    sum += h.heuristic(helper);
-                }
-            }
-            */
+            //l.legalMoves
+			
+            //simple algo
+            double value = h.heuristic(field);
             
-            if (sum > max) {
-                max = sum;
+			//Expectimax algorithm
+			//double value = expectimaxAlgo(s, field);
+		
+            //Minimax algorithm
+            //double value = minimaxAlgo(s,field,max);
+            
+            if (value > max) {
+                max = value;
                 move[0] = x[0];
                 move[1] = x[1];
             }
@@ -72,19 +109,18 @@ public class PlayerSkeleton {
             //TFrame frame = new TFrame(s);
             double[] set = population[i];
             PlayerSkeleton p = new PlayerSkeleton(set);
-            int movesMade = 0;
-            while (!s.hasLost() && movesMade < 2000000) {
+
+            while (!s.hasLost()) {
                 s.makeMove(p.pickMove(s, s.legalMoves()));
-                movesMade++;
                 /*
-                 s.draw();
-                 s.drawNext(0, 0);
-                 try {
-                 Thread.sleep(1);
-                 } catch (InterruptedException e) {
-                 e.printStackTrace();
-                 }
-                 */
+                s.draw();
+                s.drawNext(0, 0);
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                */
             }
 
             //frame.dispose();
@@ -99,16 +135,16 @@ public class PlayerSkeleton {
         return cumulativeFitness;
     }
 
-    public static int binarySearch(int[] array, int number) {
+    private static int binarySearch(int[] array, int number) {
         return binarySearch(array, number, 0, array.length - 1);
     }
 
-    public static int binarySearch(int[] array, int number, int left, int right) {
+    private static int binarySearch(int[] array, int number, int left, int right) {
         if (left == right) {
             return left;
         }
 
-        int mid = (right - left) / 2 + left;
+        int mid = (right - left)/2 + left;
         if (array[mid] > number) {
             return binarySearch(array, number, left, mid);
         } else {
@@ -159,6 +195,16 @@ public class PlayerSkeleton {
             }
         }
     }
+    
+    private void printPopulation(double[][] population) {
+    	for (int i = 0; i < population.length; i++) {
+    		System.out.print("{");
+    		for (int j = 0; j < population[i].length; j++) {
+    			System.out.print(population[i][j] + ",");
+    		}
+    		System.out.print("}, ")
+    	}
+    	System.out.println("");
 
     private static void runAlgo(int cycles) {
         if (cycles < 1) {
@@ -166,6 +212,9 @@ public class PlayerSkeleton {
         }
 
         IO io = new IO();
+        if (io.importPopulation().length != POPULATION_SIZE) {
+            io.exportPopulation(BigBang.resetPopulation());
+        }
 
         for (int i = 0; i < cycles; i++) {
             double[][] population = io.importPopulation();
@@ -174,9 +223,11 @@ public class PlayerSkeleton {
             double[][] nextPopulation = select(population, cumulativeFitness);
             crossOver(nextPopulation);
             mutate(nextPopulation);
+            if (i % 5 == 0) {
+            	printPopulation(nextpopulation);
+            }
             io.exportPopulation(nextPopulation);
         }
-
     }
 
     public static void main(String[] args) {
