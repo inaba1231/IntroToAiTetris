@@ -4,8 +4,9 @@ import java.util.Arrays;
 
 public class PlayerSkeleton {
 
-    // paste weights here
-    double[] weights = {-0.08075476343626997,0.06512710745251571,0.026528301544375688,0.9841333927818585,-0.529638056344585,-0.1136445616744991,-0.27466748067531854};
+    // *** Paste weights here
+     double[] weights = {-0.08075476343626997,0.06512710745251571,0.026528301544375688,0.9841333927818585,-0.529638056344585,-0.1136445616744991,-0.27466748067531854};
+    //double[] weights = { -1, -2, 5, 5, -1, -1, -1 };
 
     // implement this function to have a working system
     public int[] pickMove(State s, int[][] legalMoves) {
@@ -14,7 +15,15 @@ public class PlayerSkeleton {
 	for (int[] x : legalMoves) {
 	    DummyState dummyState = new DummyState(s);
 	    dummyState.makeMove(x);
-	    double sum = Heuristics.evaluate(dummyState, weights);
+
+	    // *** Clean version
+	    //double sum = Heuristics.evaluate(dummyState, weights);
+
+	    // *** Expectimax version
+	     double sum = expectimaxAlgo(dummyState);
+
+	    // *** Minimax version
+	    //double sum = minimaxAlgo(dummyState ,max);
 
 	    if (sum > max) {
 		max = sum;
@@ -25,23 +34,68 @@ public class PlayerSkeleton {
 	return move;
     }
 
-    public static void main(String[] args) {
-	State s = new State();
-	//new TFrame(s);
-	PlayerSkeleton p = new PlayerSkeleton();
-	while (!s.hasLost()) {
-	    s.makeMove(p.pickMove(s, s.legalMoves()));
-	    /*s.draw();
-	    s.drawNext(0, 0);
-	    try {
-		Thread.sleep(300);
-	    } catch (InterruptedException e) {
-		e.printStackTrace();
-	    }*/
+    public double expectimaxAlgo(DummyState s) {
+	double sum = 0;
+	for (int i = 0; i < 7; i++) {
+	    DummyState dummyState = new DummyState(s);
+	    dummyState.nextPiece = i;
+	    double max = -Double.MAX_VALUE;
+	    
+	    for (int[] possibleMove : dummyState.legalMoves()) {
+		DummyState secondDummyState = new DummyState(dummyState);
+		secondDummyState.makeMove(possibleMove);
+		sum = Heuristics.evaluate(secondDummyState, weights);
+		max = Math.max(max, sum);
+	    }
 	}
-	System.out.print(s.getRowsCleared() + ", ");
+	return sum;
     }
 
+    public double minimaxAlgo(DummyState s, double beta) {
+	double alpha = Double.MAX_VALUE;
+	double score = 0;
+	for (int i = 0; i < 7; i++) {
+	    double largest = -Double.MAX_VALUE;
+	    boolean broken = false;
+	    for (int[] possibleMove : s.legalMoves()) {
+		DummyState dummyState = new DummyState(s);
+		dummyState.makeMove(possibleMove);
+		score = Heuristics.evaluate(dummyState, weights);
+		if (score > alpha) {
+		    broken = true;
+		    break; // prune
+		}
+		if (score > largest) {
+		    largest = score;
+		}
+	    }
+	    if (alpha > largest && !broken) {
+		alpha = largest;
+	    }
+	    if (beta > alpha) {
+		return -Double.MAX_VALUE; // prune //prune
+	    }
+	}
+	return alpha;
+    }
+
+    public static void main(String[] args) {
+
+	for (int numOfGames = 0; numOfGames < 50; numOfGames++) {
+
+	    State s = new State();
+	    // new TFrame(s);
+	    PlayerSkeleton p = new PlayerSkeleton();
+	    while (!s.hasLost()) {
+		s.makeMove(p.pickMove(s, s.legalMoves()));
+		/*
+		 * s.draw(); s.drawNext(0, 0); try { Thread.sleep(300); } catch
+		 * (InterruptedException e) { e.printStackTrace(); }
+		 */
+	    }
+	    System.out.print(s.getRowsCleared() + ", ");
+	}
+    }
 }
 
 class DummyState {
@@ -166,6 +220,15 @@ class DummyState {
     }
 
     public DummyState(State s) {
+	this.lost = s.hasLost();
+	this.turn = s.getTurnNumber();
+	this.cleared = s.getRowsCleared();
+	this.field = copyField(s.getField());
+	this.top = Arrays.copyOf(s.getTop(), s.getTop().length);
+	this.nextPiece = s.getNextPiece();
+    }
+
+    public DummyState(DummyState s) {
 	this.lost = s.hasLost();
 	this.turn = s.getTurnNumber();
 	this.cleared = s.getRowsCleared();
