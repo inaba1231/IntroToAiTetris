@@ -3,8 +3,6 @@ package Tetris;
 import java.util.Arrays;
 import java.util.Random;
 
-import Tetris.Heuristics;
-
 import static Tetris.Constants.*;
 
 public class PlayerSkeleton {
@@ -21,48 +19,48 @@ public class PlayerSkeleton {
         nature = new Random();
     }
 
-    public double expectimaxAlgo(State s, int[][] field){
-    	double sum = 0;
-    	for(int i = 0; i<7; i++)}{
-			for(int[] possibleMove: l.legalMoves[i]){
-				int[][] helper = copy(field);
-				//todo
-				//deal with s.getTop();
-				m.makeMove(helper, possibleMove[0], possibleMove[1], i, s.getTop());
-				sum += h.heuristic(helper);
-			}
-		}
-		return sum;
+    public double expectimaxAlgo(State s, int[][] field) {
+        double sum = 0;
+        for (int i = 0; i < 7; i++) {
+            for (int[] possibleMove : l.legalMoves[i]) {
+                int[][] helper = copy(field);
+                //todo
+                //deal with s.getTop();
+                m.makeMove(helper, possibleMove[0], possibleMove[1], i, s.getTop());
+                sum += h.heuristic(s);
+            }
+        }
+        return sum;
     }
 
-	public double minimaxAlgo(State s, int[][] field, double beta){
-		double alpha = Double.MAX_VALUE
-		double score = 0;
-		for(int i=0; i<7;i++){
-			double largest = -Double.MAX_VALUE;
-			boolean broken = false;
-			for(int[] possibleMove: l.legalMoves[i]){
-				int[][] helper = copy(field);
-				m.makeMove(helper, possibleMove[0], possibleMove[1],i, s.getTop());
-				score = h.heuristic(helper);
-				if(score>minimax){
-					broken = true;
-					break; //prune
-				}
-				if(score>largest){
-					largest = score;
-				}
-			}
-			if(alpha>largest && !broken){
-				alpha = largest;
-			}
-			if(beta>alpha){
-				return -Double.MAX_VALUE; //prune //prune
-			}
-		}
-		return minimax;
-	}
-    
+    public double minimaxAlgo(State s, int[][] field, double beta) {
+        double alpha = Double.MAX_VALUE;
+        double score = 0;
+        for (int i = 0; i < 7; i++) {
+            double largest = -Double.MAX_VALUE;
+            boolean broken = false;
+            for (int[] possibleMove : l.legalMoves[i]) {
+                int[][] helper = copy(field);
+                m.makeMove(helper, possibleMove[0], possibleMove[1], i, s.getTop());
+                score = h.heuristic(s);
+                if (score > alpha) {
+                    broken = true;
+                    break; //prune
+                }
+                if (score > largest) {
+                    largest = score;
+                }
+            }
+            if (alpha > largest && !broken) {
+                alpha = largest;
+            }
+            if (beta > alpha) {
+                return -Double.MAX_VALUE; //prune //prune
+            }
+        }
+        return alpha;
+    }
+
     public int[] pickMove(State s, int[][] legalMoves) {
         double max = -Double.MAX_VALUE;
         int[] move = {0, 0};
@@ -70,16 +68,14 @@ public class PlayerSkeleton {
             int[][] field = copy(s.getField());
             m.makeMove(field, x[0], x[1], s.getNextPiece(), s.getTop());
             //l.legalMoves
-			
+
             //simple algo
-            double value = h.heuristic(field);
-            
-			//Expectimax algorithm
-			//double value = expectimaxAlgo(s, field);
-		
+            double value = h.heuristic(s);
+
+            //Expectimax algorithm
+            //double value = expectimaxAlgo(s, field);
             //Minimax algorithm
             //double value = minimaxAlgo(s,field,max);
-            
             if (value > max) {
                 max = value;
                 move[0] = x[0];
@@ -113,14 +109,14 @@ public class PlayerSkeleton {
             while (!s.hasLost()) {
                 s.makeMove(p.pickMove(s, s.legalMoves()));
                 /*
-                s.draw();
-                s.drawNext(0, 0);
-                try {
-                    Thread.sleep(1);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                */
+                 s.draw();
+                 s.drawNext(0, 0);
+                 try {
+                 Thread.sleep(1);
+                 } catch (InterruptedException e) {
+                 e.printStackTrace();
+                 }
+                 */
             }
 
             //frame.dispose();
@@ -144,7 +140,7 @@ public class PlayerSkeleton {
             return left;
         }
 
-        int mid = (right - left)/2 + left;
+        int mid = (right - left) / 2 + left;
         if (array[mid] > number) {
             return binarySearch(array, number, left, mid);
         } else {
@@ -195,16 +191,17 @@ public class PlayerSkeleton {
             }
         }
     }
-    
-    private void printPopulation(double[][] population) {
-    	for (int i = 0; i < population.length; i++) {
-    		System.out.print("{");
-    		for (int j = 0; j < population[i].length; j++) {
-    			System.out.print(population[i][j] + ",");
-    		}
-    		System.out.print("}, ")
-    	}
-    	System.out.println("");
+
+    private static void printPopulation(double[][] population) {
+        for (double[] population1 : population) {
+            System.out.print("{");
+            for (int j = 0; j < population1.length; j++) {
+                System.out.print(population1[j] + ",");
+            }
+            System.out.print("}, ");
+        }
+        System.out.println("");
+    }
 
     private static void runAlgo(int cycles) {
         if (cycles < 1) {
@@ -224,7 +221,7 @@ public class PlayerSkeleton {
             crossOver(nextPopulation);
             mutate(nextPopulation);
             if (i % 5 == 0) {
-            	printPopulation(nextpopulation);
+                printPopulation(nextPopulation);
             }
             io.exportPopulation(nextPopulation);
         }

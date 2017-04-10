@@ -2,8 +2,6 @@ package Tetris;
 
 import static Tetris.Constants.ROWS;
 
-import java.util.Arrays;
-
 /**
  *
  * @author JunKiat
@@ -22,105 +20,102 @@ public class Heuristics {
         this.weight = weight;
     }
 
-    
-    
     public double heuristic(State s) {
-        
+
         double[] feature = new double[size];
-    
-	
-	// 0 height difference between all pairs
+
+        // 0 height difference between all pairs
         int[] top = s.getTop();
-	int heightDiff = 0;
-	for (int i = 0; i < top.length - 1; ++i) {
-		heightDiff += Math.abs(top[i] - top[i + 1]);
-	}
-	feature[0] = heightDiff;
-	
-	// 1 max column height
-	int maxHeight = Integer.MIN_VALUE;
-	for (int column = 0; column < top.length; column++) {
-		int height = top[column];
-		if (height > maxHeight) {
-			maxHeight = height;
-		}
-	}
+        int heightDiff = 0;
+        for (int i = 0; i < top.length - 1; ++i) {
+            heightDiff += Math.abs(top[i] - top[i + 1]);
+        }
+        feature[0] = heightDiff;
 
-	feature[1] = maxHeight;
-	
-	// 2 number of rows cleared
-	feature[2] = s.getRowsCleared();
-	
-	// 3 whether game has been lost
-	feature[3] = s.hasLost() ? -1 : 1;
-	
-	// 4 number of holes
-	int[][] field = s.getField();
-	int numHoles = 0;
+        // 1 max column height
+        int maxHeight = Integer.MIN_VALUE;
+        for (int column = 0; column < top.length; column++) {
+            int height = top[column];
+            if (height > maxHeight) {
+                maxHeight = height;
+            }
+        }
 
-	for (int col = 0; col < Constants.COLS; col++) {
-		for (int row = top[col] - 1; row >= 0; row--) {
-			if (field[row][col] == 0) {
-				numHoles++;
-			}
-		}
-	}
-	feature[4] =  numHoles;
-	
-	// 5 pit depths
-	int sumOfPitDepths = 0;
-	
-	int heightOfCol;
-	int heightOfLeftCol;
-	int heightOfRightCol;
+        feature[1] = maxHeight;
 
-	// pit depth of first column
-	heightOfCol = top[0];
-	heightOfRightCol = top[1];
-	int heightDifference = heightOfRightCol - heightOfCol;
-	if (heightDifference > 2) {
-		sumOfPitDepths += heightDifference;
-	}
+        // 2 number of rows cleared
+        feature[2] = s.getRowsCleared();
 
-	for (int col = 0; col < Constants.COLS - 2; col++) {
-		heightOfLeftCol = top[col];
-		heightOfCol = top[col + 1];
-		heightOfRightCol = top[col + 2];
+        // 3 whether game has been lost
+        feature[3] = s.hasLost() ? -1 : 1;
 
-		int leftHeightDifference = heightOfLeftCol - heightOfCol;
-		int rightHeightDifference = heightOfRightCol - heightOfCol;
-		int minDiff = Math.min(leftHeightDifference, rightHeightDifference);
+        // 4 number of holes
+        int[][] field = s.getField();
+        int numHoles = 0;
 
-		if (minDiff > 2) {
-			sumOfPitDepths += minDiff;
-		}
-	}
+        for (int col = 0; col < Constants.COLS; col++) {
+            for (int row = top[col] - 1; row >= 0; row--) {
+                if (field[row][col] == 0) {
+                    numHoles++;
+                }
+            }
+        }
+        feature[4] = numHoles;
 
-	// pit depth of last column
-	heightOfCol = top[Constants.COLS - 1];
-	heightOfLeftCol = top[Constants.COLS - 2];
-	heightDifference = heightOfLeftCol - heightOfCol;
-	if (heightDifference > 2) {
-		sumOfPitDepths += heightDifference;
-	}
+        // 5 pit depths
+        int sumOfPitDepths = 0;
 
-	feature[5] = sumOfPitDepths;
-	
-	// 6 weighted height difference
-	int totalHeight = 0;
-	for (int height : top) {
-		totalHeight += height;
-	}
+        int heightOfCol;
+        int heightOfLeftCol;
+        int heightOfRightCol;
 
-	double meanHeight = (double) totalHeight / top.length;
+        // pit depth of first column
+        heightOfCol = top[0];
+        heightOfRightCol = top[1];
+        int heightDifference = heightOfRightCol - heightOfCol;
+        if (heightDifference > 2) {
+            sumOfPitDepths += heightDifference;
+        }
 
-	double avgDiff = 0;
-	
-	for (int height : top) {
-		avgDiff += Math.abs(meanHeight - height);
-	}
+        for (int col = 0; col < Constants.COLS - 2; col++) {
+            heightOfLeftCol = top[col];
+            heightOfCol = top[col + 1];
+            heightOfRightCol = top[col + 2];
 
-	feature[6] = avgDiff / top.length;
+            int leftHeightDifference = heightOfLeftCol - heightOfCol;
+            int rightHeightDifference = heightOfRightCol - heightOfCol;
+            int minDiff = Math.min(leftHeightDifference, rightHeightDifference);
+
+            if (minDiff > 2) {
+                sumOfPitDepths += minDiff;
+            }
+        }
+
+        // pit depth of last column
+        heightOfCol = top[Constants.COLS - 1];
+        heightOfLeftCol = top[Constants.COLS - 2];
+        heightDifference = heightOfLeftCol - heightOfCol;
+        if (heightDifference > 2) {
+            sumOfPitDepths += heightDifference;
+        }
+
+        feature[5] = sumOfPitDepths;
+
+        // 6 weighted height difference
+        int totalHeight = 0;
+        for (int height : top) {
+            totalHeight += height;
+        }
+
+        double meanHeight = (double) totalHeight / top.length;
+
+        double avgDiff = 0;
+
+        for (int height : top) {
+            avgDiff += Math.abs(meanHeight - height);
+        }
+
+        feature[6] = avgDiff / top.length;
 
         double value = weight[0];
         for (int i = 0; i < size; i++) {
