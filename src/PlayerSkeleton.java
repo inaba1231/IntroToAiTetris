@@ -5,8 +5,8 @@ import java.util.Arrays;
 public class PlayerSkeleton {
 
     // *** Paste weights here
-     double[] weights = {-0.08075476343626997,0.06512710745251571,0.026528301544375688,0.9841333927818585,-0.529638056344585,-0.1136445616744991,-0.27466748067531854};
-    //double[] weights = { -1, -2, 5, 5, -1, -1, -1 };
+     //double[] weights = {-0.08075476343626997,0.06512710745251571,0.026528301544375688,0.9841333927818585,-0.529638056344585,-0.1136445616744991,-0.27466748067531854};
+    double[] weights = { -1, 1, 1, 1, -1, -1, -1 };
 
     // implement this function to have a working system
     public int[] pickMove(State s, int[][] legalMoves) {
@@ -44,9 +44,10 @@ public class PlayerSkeleton {
 	    for (int[] possibleMove : dummyState.legalMoves()) {
 		DummyState secondDummyState = new DummyState(dummyState);
 		secondDummyState.makeMove(possibleMove);
-		sum = Heuristics.evaluate(secondDummyState, weights);
-		max = Math.max(max, sum);
+		double value = Heuristics.evaluate(secondDummyState, weights);
+		max = Math.max(max, value);
 	    }
+	    sum += max;
 	}
 	return sum;
     }
