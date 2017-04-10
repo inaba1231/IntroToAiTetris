@@ -7,6 +7,7 @@ public class PlayerSkeleton {
     // *** Paste weights here
      //double[] weights = {-0.08075476343626997,0.06512710745251571,0.026528301544375688,0.9841333927818585,-0.529638056344585,-0.1136445616744991,-0.27466748067531854};
     double[] weights = { -1, 1, 1, 1, -1, -1, -1 };
+    static int numOfGames = 100;
 
     // implement this function to have a working system
     public int[] pickMove(State s, int[][] legalMoves) {
@@ -20,10 +21,10 @@ public class PlayerSkeleton {
 	    //double sum = Heuristics.evaluate(dummyState, weights);
 
 	    // *** Expectimax version
-	     double sum = expectimaxAlgo(dummyState);
+	    // double sum = expectimaxAlgo(dummyState);
 
 	    // *** Minimax version
-	    //double sum = minimaxAlgo(dummyState ,max);
+	    double sum = minimaxAlgo(dummyState ,max);
 
 	    if (sum > max) {
 		max = sum;
@@ -82,7 +83,7 @@ public class PlayerSkeleton {
 
     public static void main(String[] args) {
 
-	for (int numOfGames = 0; numOfGames < 50; numOfGames++) {
+	for (int i = 0; i < numOfGames; i++) {
 
 	    State s = new State();
 	    // new TFrame(s);
