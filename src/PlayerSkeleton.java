@@ -54,32 +54,35 @@ public class PlayerSkeleton {
     }
 
     public double minimaxAlgo(DummyState s, double beta) {
-	double alpha = Double.MAX_VALUE;
-	double score = 0;
-	for (int i = 0; i < 7; i++) {
-	    double largest = -Double.MAX_VALUE;
-	    boolean broken = false;
-	    for (int[] possibleMove : s.legalMoves()) {
-		DummyState dummyState = new DummyState(s);
-		dummyState.makeMove(possibleMove);
-		score = Heuristics.evaluate(dummyState, weights);
-		if (score > alpha) {
-		    broken = true;
-		    break; // prune
-		}
-		if (score > largest) {
-		    largest = score;
-		}
-	    }
-	    if (alpha > largest && !broken) {
-		alpha = largest;
-	    }
-	    if (beta > alpha) {
-		return -Double.MAX_VALUE; // prune //prune
-	    }
-	}
-	return alpha;
-    }
+    	double alpha = Double.MAX_VALUE;
+    	double score = 0;
+    	for (int i = 0; i < 7; i++) {
+    	    double largest = -Double.MAX_VALUE;
+    	    boolean broken = false;
+    	    DummyState dummyState = new DummyState(s);
+    	    dummyState.nextPiece = i;
+    	    
+    	    for (int[] possibleMove : dummyState.legalMoves()) {
+    		DummyState secondDummyState = new DummyState(dummyState);
+    		secondDummyState.makeMove(possibleMove);
+    		score = Heuristics.evaluate(secondDummyState, weights);
+    		if (score > alpha) {
+    		    broken = true;
+    		    break; // prune
+    		}
+    		if (score > largest) {
+    		    largest = score;
+    		}
+    	    }
+    	    if (alpha > largest && !broken) {
+    		alpha = largest;
+    	    }
+    	    if (beta > alpha) {
+    		return -Double.MAX_VALUE; // prune //prune
+    	    }
+    	}
+    	return alpha;
+        }
 
     public static void main(String[] args) {
 
